@@ -108,7 +108,7 @@ export default function CheckStatus() {
     
     // Content
     doc.setFontSize(11);
-    doc.text('Berdasarkan hasil seleksi Penerimaan Murid Baru (PMB) MTs Manbaul ULum Astambul,', 20, currentY);
+    doc.text('Berdasarkan hasil seleksi Penerimaan Murid Baru (PMB) MTs Manbaul Ulum Astambul,', 20, currentY);
     currentY += 7;
     doc.text('menyatakan bahwa:', 20, currentY);
     currentY += 13;
