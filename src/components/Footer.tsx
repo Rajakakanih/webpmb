@@ -31,7 +31,7 @@ export default function Footer() {
             <h3 className="text-white font-semibold mb-4">Tautan Cepat</h3>
             <ul className="space-y-2 text-sm">
               <li><Link to="/" className="hover:text-blue-400 transition-colors">Beranda</Link></li>
-              <li><Link to="/daftar" className="hover:text-blue-400 transition-colors">Pendaftaran PPDB</Link></li>
+              <li><Link to="/daftar" className="hover:text-blue-400 transition-colors">Pendaftaran PMB</Link></li>
               <li><Link to="/admin" className="hover:text-blue-400 transition-colors">Login Admin</Link></li>
             </ul>
           </div>
