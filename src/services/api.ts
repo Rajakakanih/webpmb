@@ -68,7 +68,7 @@ export interface AdminData extends RegistrationData {
 // Mock data for preview if GAS URL is not set
 const getInitialMockSettings = (): AppSettings => {
   const defaultSettings: AppSettings = {
-    namaSekolah: "SDN Harapan Bangsa",
+    namaSekolah: "MTs Manbaul Ulum Astambul",
     alamat: "Jl. Pendidikan No. 123, Kota Pelajar, Indonesia 12345",
     telepon: "(021) 1234-5678",
     email: "info@sdnharapanbangsa.sch.id",
