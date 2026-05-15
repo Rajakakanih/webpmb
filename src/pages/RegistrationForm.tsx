@@ -74,10 +74,10 @@ export default function RegistrationForm() {
     doc.setTextColor(255, 255, 255);
     doc.setFontSize(22);
     doc.setFont("helvetica", "bold");
-    doc.text("BUKTI PENDAFTARAN PPDB", 105, 20, { align: "center" });
+    doc.text("BUKTI PENDAFTARAN PMB", 105, 20, { align: "center" });
     doc.setFontSize(14);
     doc.setFont("helvetica", "normal");
-    doc.text(settings?.namaSekolah || "SDN Harapan Bangsa", 105, 30, { align: "center" });
+    doc.text(settings?.namaSekolah || "MTs Manbaul Ulum Astambul", 105, 30, { align: "center" });
 
     // Content
     doc.setTextColor(0, 0, 0);
@@ -209,7 +209,7 @@ export default function RegistrationForm() {
           </div>
           <h2 className="text-2xl font-bold text-slate-900 mb-4">Pendaftaran Ditutup</h2>
           <p className="text-slate-600 mb-8">
-            Mohon maaf, pendaftaran peserta didik baru saat ini sedang ditutup. Silakan kembali lagi nanti atau hubungi pihak sekolah untuk informasi lebih lanjut.
+            Mohon maaf, pendaftaran murid baru saat ini sedang ditutup. Silakan kembali lagi nanti atau hubungi pihak sekolah untuk informasi lebih lanjut.
           </p>
           <Link
             to="/"
