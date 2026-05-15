@@ -313,7 +313,7 @@ export default function RegistrationForm() {
         >
           <div className="bg-gradient-to-r from-blue-600 to-blue-800 px-8 py-10 text-white text-center">
             <h2 className="text-3xl font-bold mb-2">Formulir Pendaftaran PMB</h2>
-            <p className="text-blue-100">Lengkapi data diri calon peserta didik dengan benar dan valid.</p>
+            <p className="text-blue-100">Lengkapi data diri calon murid dengan benar dan valid.</p>
           </div>
 
           <form onSubmit={handleSubmit} className="p-8 space-y-8">
