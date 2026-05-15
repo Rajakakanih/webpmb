@@ -151,7 +151,7 @@ export default function CheckStatus() {
     const tanggal = settings?.tanggalSurat || dateStr;
     
     doc.text(`${tempat}, ${tanggal}`, 140, currentY);
-    doc.text('Kepala Sekolah', 140, currentY + 6);
+    doc.text('Kepala Madrasah', 140, currentY + 6);
     
     if (settings?.stempelSekolah) {
       try {
