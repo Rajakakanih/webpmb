@@ -60,7 +60,7 @@ export default function CheckStatus() {
         doc.setFont('helvetica', 'bold');
         doc.text('BUKTI KELULUSAN PMB MTs MANBAUL ULUM ASTAMBUL', 105, currentY, { align: 'center' });
         currentY += 8;
-        doc.setFontSize(12);
+        doc.setFontSize(16);
         doc.setFont('helvetica', 'normal');
         doc.text(`Tahun Ajaran ${new Date().getFullYear()}/${new Date().getFullYear() + 1}`, 105, currentY, { align: 'center' });
         currentY += 6;
@@ -76,7 +76,7 @@ export default function CheckStatus() {
         doc.setFont('helvetica', 'bold');
         doc.text('BUKTI KELULUSAN PMB MTs MANBAUL ULUM ASTAMBUL', 105, currentY, { align: 'center' });
         currentY += 8;
-        doc.setFontSize(12);
+        doc.setFontSize(16);
         doc.setFont('helvetica', 'normal');
         doc.text(`Tahun Ajaran ${new Date().getFullYear()}/${new Date().getFullYear() + 1}`, 105, currentY, { align: 'center' });
         currentY += 6;
@@ -93,7 +93,7 @@ export default function CheckStatus() {
       doc.setFont('helvetica', 'bold');
       doc.text('BUKTI KELULUSAN PMB MTs MANBAUL ULUM ASTAMBUL', 105, currentY, { align: 'center' });
       currentY += 8;
-      doc.setFontSize(12);
+      doc.setFontSize(16);
       doc.setFont('helvetica', 'nomal');
       doc.text(`Tahun Ajaran ${new Date().getFullYear()}/${new Date().getFullYear() + 1}`, 105, currentY, { align: 'center' });
       currentY += 6;
@@ -108,7 +108,7 @@ export default function CheckStatus() {
     
     // Content
     doc.setFontSize(11);
-    doc.text('Berdasarkan hasil seleksi Penerimaan Murid Baru (PMB),', 20, currentY);
+    doc.text('Berdasarkan hasil seleksi Penerimaan Murid Baru (PMB) MTs Manbaul ULum Astambul,', 20, currentY);
     currentY += 7;
     doc.text('menyatakan bahwa:', 20, currentY);
     currentY += 13;
