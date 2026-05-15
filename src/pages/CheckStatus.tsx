@@ -61,8 +61,8 @@ export default function CheckStatus() {
         doc.text('BUKTI KELULUSAN PMB MTs MANBAUL ULUM ASTAMBUL', 105, currentY, { align: 'center' });
         currentY += 8;
         doc.setFontSize(16);
-        doc.setFont('helvetica', 'normal');
-        doc.text(`Tahun Ajaran ${new Date().getFullYear()}/${new Date().getFullYear() + 1}`, 105, currentY, { align: 'center' });
+        doc.setFont('helvetica', 'bold');
+        doc.text(`TAHUN AJARAN ${new Date().getFullYear()}/${new Date().getFullYear() + 1}`, 105, currentY, { align: 'center' });
         currentY += 6;
         if (settings?.nomorSurat) {
           doc.setFontSize(11);
@@ -77,8 +77,8 @@ export default function CheckStatus() {
         doc.text('BUKTI KELULUSAN PMB MTs MANBAUL ULUM ASTAMBUL', 105, currentY, { align: 'center' });
         currentY += 8;
         doc.setFontSize(16);
-        doc.setFont('helvetica', 'normal');
-        doc.text(`Tahun Ajaran ${new Date().getFullYear()}/${new Date().getFullYear() + 1}`, 105, currentY, { align: 'center' });
+        doc.setFont('helvetica', 'bold');
+        doc.text(`TAHUN AJARAN ${new Date().getFullYear()}/${new Date().getFullYear() + 1}`, 105, currentY, { align: 'center' });
         currentY += 6;
         if (settings?.nomorSurat) {
           doc.setFontSize(11);
@@ -94,8 +94,8 @@ export default function CheckStatus() {
       doc.text('BUKTI KELULUSAN PMB MTs MANBAUL ULUM ASTAMBUL', 105, currentY, { align: 'center' });
       currentY += 8;
       doc.setFontSize(16);
-      doc.setFont('helvetica', 'nomal');
-      doc.text(`Tahun Ajaran ${new Date().getFullYear()}/${new Date().getFullYear() + 1}`, 105, currentY, { align: 'center' });
+      doc.setFont('helvetica', 'bold');
+      doc.text(`TAHUN AJARAN ${new Date().getFullYear()}/${new Date().getFullYear() + 1}`, 105, currentY, { align: 'center' });
       currentY += 6;
       if (settings?.nomorSurat) {
         doc.setFontSize(11);
