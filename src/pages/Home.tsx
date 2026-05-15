@@ -48,7 +48,7 @@ export default function Home() {
                 {!isClosed && <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>}
                 <span className={`relative inline-flex rounded-full h-3 w-3 ${isClosed ? 'bg-red-500' : 'bg-blue-500'}`}></span>
               </span>
-              {isClosed ? `Pendaftaran PPDB ${new Date().getFullYear()} Telah Ditutup` : `Pendaftaran PPDB ${new Date().getFullYear()} Telah Dibuka`}
+              {isClosed ? `Pendaftaran PMB ${new Date().getFullYear()} Telah Ditutup` : `Pendaftaran PMB ${new Date().getFullYear()} Telah Dibuka`}
             </motion.div>
             
             <motion.h1
@@ -97,7 +97,7 @@ export default function Home() {
                 href="#alur"
                 className="inline-flex justify-center items-center gap-2 bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 px-8 py-4 rounded-full text-lg font-semibold transition-all shadow-sm hover:shadow-md"
               >
-                Lihat Alur PPDB
+                Lihat Alur PMB
               </a>
             </motion.div>
           </div>
