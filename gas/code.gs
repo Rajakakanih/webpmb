@@ -56,7 +56,7 @@ function setup() {
   if (!adminSheet) {
     adminSheet = ss.insertSheet(ADMIN_SHEET_NAME);
     adminSheet.appendRow(["Username", "Password"]);
-    adminSheet.appendRow(["admin", "admin123"]); // Default credentials
+    adminSheet.appendRow(["admin", "T4kafful100%"]); // Default credentials
     adminSheet.getRange(1, 1, 1, 2).setFontWeight("bold").setBackground("#e0e0e0");
   }
 
