@@ -106,7 +106,7 @@ export default function RegistrationForm() {
     
     settings?.formFields?.forEach(field => {
       if (field.type !== 'file') {
-        doc.text(field.label, 20, startY);
+        doc.text(field.label, 35, startY);
         doc.text(":", 70, startY);
         let value = formData[field.label] || '-';
         if (field.type === 'date') {
