@@ -59,7 +59,8 @@ export default function Home() {
             >
               Selamat Datang Di Portal <br className="hidden md:block" />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-green-500">
-                Penerimaan Murid Baru (PMB) MTs Manbaul Ulum Astambul
+                Penerimaan Murid Baru (PMB) 
+                MTs Manbaul Ulum Astambul
               </span>
             </motion.h1>
             
