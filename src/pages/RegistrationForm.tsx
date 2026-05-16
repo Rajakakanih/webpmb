@@ -29,7 +29,7 @@ export default function RegistrationForm() {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // Check file size (max 2MB)
+    // Check file size (max 5MB)
     if (file.size > 2 * 1024 * 1024) {
       Swal.fire({
         icon: 'error',
