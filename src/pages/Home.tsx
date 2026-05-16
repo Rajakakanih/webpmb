@@ -59,7 +59,7 @@ export default function Home() {
             >
               Menciptakan Generasi Yang <br className="hidden md:block" />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-green-500">
-                Beriman Dan Bertaqwa Sekaligus Terampil Lagi Berbudaya
+                Berimtaq Dan Terampil Lagi Berbudaya
               </span>
             </motion.h1>
             
