@@ -259,7 +259,7 @@ export default function AdminDashboard() {
     doc.setTextColor(255, 255, 255);
     doc.setFontSize(22);
     doc.setFont("helvetica", "bold");
-    doc.text("KARTU PENDAFTARAN PPDB", 105, 20, { align: "center" });
+    doc.text("KARTU PENDAFTARAN PMB", 105, 20, { align: "center" });
     doc.setFontSize(14);
     doc.setFont("helvetica", "normal");
     doc.text(settings?.namaSekolah || "Sekolah Dasar", 105, 30, { align: "center" });
