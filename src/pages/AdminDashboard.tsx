@@ -306,7 +306,7 @@ export default function AdminDashboard() {
     doc.line(20, startY + lineHeight * 7, 190, startY + lineHeight * 7);
     doc.setFontSize(10);
     doc.setTextColor(100, 100, 100);
-    doc.text(`Kartu ini adalah bukti sah pendaftaran PPDB ${settings?.namaSekolah || 'Sekolah'}.`, 105, startY + lineHeight * 8, { align: "center" });
+    doc.text(`Kartu ini adalah bukti sah pendaftaran PMB ${settings?.namaSekolah || 'Sekolah'}.`, 105, startY + lineHeight * 8, { align: "center" });
     doc.text(`Dicetak pada: ${new Date().toLocaleString()}`, 105, startY + lineHeight * 8.5, { align: "center" });
 
     // Box around everything
