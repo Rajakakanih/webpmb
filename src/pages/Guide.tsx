@@ -30,7 +30,7 @@ export default function Guide() {
 
   const judul = settings?.panduanJudul || "Panduan Pendaftaran PMB";
   const deskripsi = settings?.panduanDeskripsi || "Persiapkan dokumen berikut sebelum mulai mengisi formulir pendaftaran.";
-  const peringatan = settings?.panduanPeringatan || "Pastikan semua dokumen di-scan atau difoto dengan jelas dan dapat terbaca. Format file yang disarankan adalah JPG, PNG, atau PDF dengan ukuran maksimal 5 MB per file.";
+  const peringatan = settings?.panduanPeringatan || "Pastikan semua dokumen di-scan atau difoto dengan jelas dan dapat terbaca. Format file yang disarankan adalah JPG, PNG, atau PDF dengan ukuran maksimal 2MB per file.";
   const dokumen = settings?.panduanDokumen || [
     { id: "1", icon: "FileDigit", title: "Kartu Keluarga (KK)", description: "Asli atau fotokopi yang dilegalisir. Pastikan NIK dan nama calon murid tercantum dengan benar." },
     { id: "2", icon: "FileBadge", title: "Akta Kelahiran", description: "Dokumen asli atau fotokopi legalisir untuk verifikasi usia dan data diri calon murid." },
