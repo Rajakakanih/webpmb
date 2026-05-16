@@ -123,7 +123,7 @@ export default function Home() {
               {
                 icon: <Users className="text-green-500" size={32} />,
                 title: "Guru Profesional",
-                desc: "Dididik oleh tenaga pengajar tersertifikasi, berpengalaman, dan berdedikasi tinggi pada pendidikan."
+                desc: "Dididik oleh tenaga pengajar bersertifikasi, berpengalaman, dan berdedikasi tinggi pada pendidikan."
               },
               {
                 icon: <Trophy className="text-amber-500" size={32} />,
