@@ -128,7 +128,7 @@ export default function Home() {
               {
                 icon: <Trophy className="text-amber-500" size={32} />,
                 title: "Fasilitas Lengkap",
-                desc: "Ruang kelas nyaman, perpustakaan , Ruang komputer, Mushalla dan Kantin ."
+                desc: "Ruang kelas yang nyaman, perpustakaan, ruang komputer, mushalla dan kantin."
               }
             ].map((feature, idx) => (
               <motion.div
