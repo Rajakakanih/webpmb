@@ -1,4 +1,4 @@
-import { motion } from 'motion/react';
+import { motion } from 'framer-motion'; // Ubah ke 'motion/react' jika Anda menggunakan versi v12+
 import { Link } from 'react-router-dom';
 import { BookOpen, Users, Trophy, ChevronRight, CheckCircle2, Calendar, FileText, CheckSquare, AlertCircle } from 'lucide-react';
 import { useSettings } from '../context/SettingsContext';
@@ -7,22 +7,27 @@ export default function Home() {
   const { settings } = useSettings();
   const isClosed = settings?.statusPendaftaran === 'Tutup';
 
+  // Variasi container untuk mengatur efek kemunculan beruntun (stagger)
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.1,
+        staggerChildren: 0.15, // Jeda antar elemen sedikit dinaikkan agar lebih berasa
       },
     },
   };
 
+  // Variasi item pendukung animasi masuk yang mulus
   const itemVariants = {
-    hidden: { y: 20, opacity: 0 },
+    hidden: { y: 30, opacity: 0 },
     visible: {
       y: 0,
       opacity: 1,
-      transition: { duration: 0 },
+      transition: { 
+        duration: 0.5, 
+        ease: "easeOut" 
+      },
     },
   };
 
@@ -38,10 +43,11 @@ export default function Home() {
         
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="text-center max-w-3xl mx-auto">
+            {/* Badge Status Pendaftaran */}
             <motion.div
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0 }}
+              transition={{ duration: 0.5 }} // Perbaikan: Durasi diubah dari 0 ke 0.5
               className={`inline-flex items-center gap-2 px-4 py-2 rounded-full font-medium text-sm mb-8 shadow-sm border ${isClosed ? 'bg-red-100 text-red-700 border-red-200' : 'bg-blue-100 text-blue-700 border-blue-200'}`}
             >
               <span className="relative flex h-3 w-3">
@@ -60,7 +66,7 @@ export default function Home() {
               Selamat Datang Di Portal <br className="hidden md:block" />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-green-500">
                 Penerimaan Murid Baru (PMB) 
-                MTs Manbaul Ulum Astambul
+                <br />MTs Manbaul Ulum Astambul
               </span>
             </motion.h1>
             
@@ -134,7 +140,7 @@ export default function Home() {
             ].map((feature, idx) => (
               <motion.div
                 key={idx}
-                variants={itemVariants}
+                variants={itemVariants} // Sekarang beralih menggunakan transisi smooth berdurasi 0.5s
                 className="bg-white rounded-2xl p-8 shadow-sm border border-slate-100 hover:shadow-md transition-shadow"
               >
                 <div className="w-14 h-14 rounded-xl bg-slate-50 flex items-center justify-center mb-6 border border-slate-100">
