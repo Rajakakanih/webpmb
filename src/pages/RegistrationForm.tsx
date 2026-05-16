@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
-import { Upload, AlertCircle, FileText, Image as ImageIcon, Loader2, MapPin, Trash2 } from 'lucide-react';
+import { Upload, AlertCircle, FileText, Loader2, MapPin, Trash2 } from 'lucide-react';
 import Swal from 'sweetalert2';
 import { Link } from 'react-router-dom';
 import { submitRegistration, RegistrationData } from '../services/api';
@@ -9,9 +9,8 @@ import jsPDF from 'jspdf';
 import MapPicker from '../components/MapPicker';
 import { calculateDistance } from '../utils/distance';
 
-// Kunci unik untuk penyimpanan lokal
+// Kunci unik untuk penyimpanan lokal (Hanya untuk data teks & lokasi)
 const LOCAL_STORAGE_KEY = 'pmb_registration_form_data';
-const PREVIEWS_STORAGE_KEY = 'pmb_registration_previews_data';
 const LOCATION_STORAGE_KEY = 'pmb_registration_location_data';
 
 export default function RegistrationForm() {
@@ -21,16 +20,17 @@ export default function RegistrationForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isAgreed, setIsAgreed] = useState(false);
   
-  // Inisialisasi state langsung dari localStorage jika tersedia
+  // State data formulir teks
   const [formData, setFormData] = useState<RegistrationData>(() => {
     const saved = localStorage.getItem(LOCAL_STORAGE_KEY);
     return saved ? JSON.parse(saved) : {};
   });
 
-  const [previews, setPreviews] = useState<Record<string, string>>(() => {
-    const saved = localStorage.getItem(PREVIEWS_STORAGE_KEY);
-    return saved ? JSON.parse(saved) : {};
-  });
+  // State khusus untuk menampung file object asli (Tidak disimpan ke localStorage)
+  const [fileFields, setFileFields] = useState<Record<string, File>>({});
+
+  // State untuk menyimpan URL pratinjau gambar sementara (Object URL)
+  const [previews, setPreviews] = useState<Record<string, string>>({});
 
   const [mapLocation, setMapLocation] = useState<{lat: number, lng: number} | null>(() => {
     const saved = localStorage.getItem(LOCATION_STORAGE_KEY);
@@ -39,20 +39,15 @@ export default function RegistrationForm() {
 
   const [distance, setDistance] = useState<number | null>(null);
 
-  // Efek samping untuk memantau perubahan data dan menyimpannya otomatis
+  // Efek samping untuk memantau perubahan data teks formulir
   useEffect(() => {
     localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(formData));
   }, [formData]);
 
   useEffect(() => {
-    localStorage.setItem(PREVIEWS_STORAGE_KEY, JSON.stringify(previews));
-  }, [previews]);
-
-  useEffect(() => {
     if (mapLocation) {
       localStorage.setItem(LOCATION_STORAGE_KEY, JSON.stringify(mapLocation));
       
-      // Kalkulasi ulang jarak jika lokasi atau koordinat sekolah termuat
       if (settings?.koordinatSekolah) {
         const [schoolLat, schoolLng] = settings.koordinatSekolah.split(',').map(s => parseFloat(s.trim()));
         if (!isNaN(schoolLat) && !isNaN(schoolLng)) {
@@ -66,7 +61,15 @@ export default function RegistrationForm() {
     }
   }, [mapLocation, settings?.koordinatSekolah]);
 
-  // Fungsi hapus draf formulir manual jika pengguna ingin mengulang total
+  // Membersihkan Object URL pratinjau dari memori jika komponen unmount
+  useEffect(() => {
+    return () => {
+      Object.values(previews).forEach(url => {
+        if (url.startsWith('blob:')) URL.revokeObjectURL(url);
+      });
+    };
+  }, [previews]);
+
   const handleClearDraft = () => {
     Swal.fire({
       title: 'Hapus Draf Formulir?',
@@ -80,9 +83,13 @@ export default function RegistrationForm() {
     }).then((result) => {
       if (result.isConfirmed) {
         localStorage.removeItem(LOCAL_STORAGE_KEY);
-        localStorage.removeItem(PREVIEWS_STORAGE_KEY);
         localStorage.removeItem(LOCATION_STORAGE_KEY);
+        
+        // Revoke previews URLs sebelum dihapus
+        Object.values(previews).forEach(url => URL.revokeObjectURL(url));
+        
         setFormData({});
+        setFileFields({});
         setPreviews({});
         setMapLocation(null);
         setDistance(null);
@@ -97,11 +104,10 @@ export default function RegistrationForm() {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>, fieldId: string) => {
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, fieldId: string) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // Batas maksimal diubah menjadi 5MB (5 * 1024 * 1024 bytes)
     const MAX_FILE_SIZE = 5 * 1024 * 1024; 
     if (file.size > MAX_FILE_SIZE) {
       Swal.fire({
@@ -114,13 +120,17 @@ export default function RegistrationForm() {
       return;
     }
 
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      const base64String = reader.result as string;
-      setFormData(prev => ({ ...prev, [fieldId]: base64String }));
-      setPreviews(prev => ({ ...prev, [fieldId]: base64String }));
-    };
-    reader.readAsDataURL(file);
+    // Simpan file asli ke state terpisah
+    setFileFields(prev => ({ ...prev, [fieldId]: file }));
+
+    // Hapus preview lama jika ada untuk menghemat memori RAM
+    if (previews[fieldId] && previews[fieldId].startsWith('blob:')) {
+      URL.revokeObjectURL(previews[fieldId]);
+    }
+
+    // Buat DOM String blob URL untuk pratinjau (sangat cepat & hemat penyimpanan)
+    const objectUrl = URL.createObjectURL(file);
+    setPreviews(prev => ({ ...prev, [fieldId]: objectUrl }));
   };
 
   const handleLocationSelect = (lat: number, lng: number) => {
@@ -135,6 +145,16 @@ export default function RegistrationForm() {
         setFormData(prev => ({ ...prev, 'Jarak ke Sekolah (km)': dist.toFixed(2) }));
       }
     }
+  };
+
+  // Fungsi pembantu untuk mengubah berkas menjadi base64 secara asinkron saat submit
+  const fileToBase64 = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = error => reject(error);
+    });
   };
 
   const printProof = (noPendaftaran: string) => {
@@ -174,7 +194,7 @@ export default function RegistrationForm() {
 
     doc.setFont("helvetica", "normal");
     
-    settings?.formFields?.forEach(field => {
+    settings?.formFields?.forEach((field: any) => {
       if (field.type !== 'file') {
         if (startY > 250) {
           doc.addPage();
@@ -183,7 +203,7 @@ export default function RegistrationForm() {
 
         doc.text(field.label, 20, startY);
         doc.text(":", 70, startY);
-        let value = formData[field.label] || '-';
+        let value = (formData[field.label] as string) || '-';
         if (field.type === 'date') {
           value = formatDate(value);
         }
@@ -227,12 +247,13 @@ export default function RegistrationForm() {
       return;
     }
 
-    const missingFiles = settings?.formFields?.filter(f => f.type === 'file' && f.required && !formData[f.label]);
+    // Validasi keberadaan file berkas yang diwajibkan
+    const missingFiles = settings?.formFields?.filter((f: any) => f.type === 'file' && f.required && !fileFields[f.label]);
     if (missingFiles && missingFiles.length > 0) {
       Swal.fire({
         icon: 'warning',
         title: 'Berkas Belum Lengkap',
-        text: `Mohon unggah dokumen: ${missingFiles.map(f => f.label).join(', ')}`,
+        text: `Mohon unggah dokumen: ${missingFiles.map((f: any) => f.label).join(', ')}`,
         confirmButtonColor: '#3b82f6'
       });
       return;
@@ -251,12 +272,19 @@ export default function RegistrationForm() {
     setIsSubmitting(true);
 
     try {
-      const response = await submitRegistration(formData);
+      // Satukan data teks dengan data file yang baru dikonversi ke Base64 saat hendak dikirim ke API
+      const finalPayload = { ...formData };
+      
+      for (const key in fileFields) {
+        if (fileFields[key]) {
+          finalPayload[key] = await fileToBase64(fileFields[key]);
+        }
+      }
+
+      const response = await submitRegistration(finalPayload);
       
       if (response.status === 'success') {
-        // Hapus draf di local storage jika pengiriman sukses total
         localStorage.removeItem(LOCAL_STORAGE_KEY);
-        localStorage.removeItem(PREVIEWS_STORAGE_KEY);
         localStorage.removeItem(LOCATION_STORAGE_KEY);
 
         Swal.fire({
@@ -339,15 +367,20 @@ export default function RegistrationForm() {
           </select>
         );
       case 'file':
+        const hasFile = fileFields[field.label] || previews[field.label];
+        const isImage = fileFields[field.label]?.type.startsWith('image/') || previews[field.label]?.startsWith('blob:');
+
         return (
           <div className="space-y-2">
             <div className="flex items-center justify-center w-full">
               <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-slate-300 border-dashed rounded-lg cursor-pointer bg-slate-50 hover:bg-slate-100 transition-colors">
                 <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                  {previews[field.label] ? (
+                  {hasFile ? (
                     <div className="flex items-center space-x-2 text-green-600">
                       <FileText size={24} />
-                      <span className="text-sm font-medium">Berkas Terunggah</span>
+                      <span className="text-sm font-medium">
+                        {fileFields[field.label]?.name || "Berkas Terunggah"}
+                      </span>
                     </div>
                   ) : (
                     <>
@@ -362,11 +395,11 @@ export default function RegistrationForm() {
                   className="hidden" 
                   accept=".pdf, .jpg, .jpeg, .png"
                   onChange={(e) => handleFileChange(e, field.label)} 
-                  required={field.required && !formData[field.label]}
+                  required={field.required && !fileFields[field.label]}
                 />
               </label>
             </div>
-            {previews[field.label] && previews[field.label].startsWith('data:image') && (
+            {previews[field.label] && isImage && (
               <div className="mt-2 relative w-24 h-24 rounded-lg overflow-hidden border border-slate-200">
                 <img src={previews[field.label]} alt="Preview" className="w-full h-full object-cover" />
               </div>
@@ -396,7 +429,7 @@ export default function RegistrationForm() {
             <h1 className="text-3xl font-bold">Formulir Pendaftaran Siswa Baru</h1>
             <p className="text-blue-100 mt-2">{settings?.namaSekolah || "MTs Manbaul Ulum Astambul"}</p>
           </div>
-          {Object.keys(formData).length > 0 && (
+          {(Object.keys(formData).length > 0 || Object.keys(fileFields).length > 0) && (
             <button
               type="button"
               onClick={handleClearDraft}
