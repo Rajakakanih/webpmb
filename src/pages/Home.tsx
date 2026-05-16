@@ -158,7 +158,7 @@ export default function Home() {
               transition={{ duration: 0.6 }}
             >
               <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-6">
-                Sambutan Kepala Madrasah
+                Sambutan Kepala Sekolah
               </h2>
               <div className="prose prose-lg text-slate-600">
                 {settings?.sambutanKepalaSekolah?.split('\n').map((paragraph, idx) => (
@@ -172,7 +172,7 @@ export default function Home() {
                   </div>
                   <div>
                     <h4 className="font-bold text-slate-900">{settings?.namaKepalaSekolah || 'Kepala Sekolah'}</h4>
-                    <p className="text-sm text-slate-500">Kepala {settings?.namaSekolah}</p>
+                    <p className="text-sm text-slate-500">Kepala Sekolah {settings?.namaSekolah}</p>
                   </div>
                 </div>
               </div>
