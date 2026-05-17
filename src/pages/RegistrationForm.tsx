@@ -298,7 +298,7 @@ export default function RegistrationForm() {
           </div>
           <h2 className="text-2xl font-bold text-slate-900 mb-4">Pendaftaran Ditutup</h2>
           <p className="text-slate-600 mb-8">
-            Mohon maaf, pendaftaran peserta didik baru saat ini sedang ditutup. Silakan kembali lagi nanti atau hubungi pihak sekolah untuk informasi lebih lanjut.
+            Mohon maaf, pendaftaran murid baru saat ini sedang ditutup. Silakan kembali lagi nanti atau hubungi pihak sekolah untuk informasi lebih lanjut.
           </p>
           <Link
             to="/"
@@ -401,8 +401,8 @@ export default function RegistrationForm() {
           className="bg-white rounded-2xl shadow-xl overflow-hidden border border-slate-100"
         >
           <div className="bg-gradient-to-r from-blue-600 to-blue-800 px-8 py-10 text-white text-center">
-            <h2 className="text-3xl font-bold mb-2">Formulir Pendaftaran PPDB</h2>
-            <p className="text-blue-100">Lengkapi data diri calon peserta didik dengan benar dan valid.</p>
+            <h2 className="text-3xl font-bold mb-2">Formulir Pendaftaran PMB</h2>
+            <p className="text-blue-100">Lengkapi data diri calon murid dengan benar dan valid.</p>
           </div>
 
           <form onSubmit={handleSubmit} className="p-8 space-y-8">
