@@ -138,7 +138,7 @@ export default function CheckStatus() {
     doc.text('Diharapkan segera melakukan daftar ulang dengan membawa persyaratan berikut:', 20, currentY);
     
     currentY += lineSpacing;
-    const reqText = settings?.persyaratanDaftarUlang || '1. Bukti Kelulusan ini (dicetak)\n2. Fotokopi Akta Kelahiran (2 lembar)\n3. Fotokopi Kartu Keluarga (2 lembar)\n4. Pas Foto 3x4 (4 lembar)\n5. Melakukan pembayaran administrasi awal';
+    const reqText = settings?.persyaratanDaftarUlang || '1. Memperlihatkan Bukti Kelulusan ini \n2. Fotokopi Akta Kelahiran (2 lembar)\n3. Fotokopi Kartu Keluarga (2 lembar)\n4. Pas Foto 3x4 (3 lembar)';
     const splitReq = doc.splitTextToSize(reqText, 160);
     doc.text(splitReq, 25, currentY);
     
@@ -221,7 +221,7 @@ export default function CheckStatus() {
                 <p className="text-sm text-green-700 mb-2 font-medium">Tanggal Daftar Ulang: {new Date(settings.tanggalDaftarUlang).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
               )}
               <div className="text-sm text-green-700 whitespace-pre-line">
-                {settings?.persyaratanDaftarUlang || '1. Memperlihatkan Bukti Kelulusan \n2. Membawa Fotokopi Akta Kelahiran (2 lembar)\n3. Membawa Fotokopi Kartu Keluarga (2 lembar)\n4. Membawa Pas Foto 3x4 (3 lembar)'}
+                {settings?.persyaratanDaftarUlang || '1. Memperlihatkan Bukti Kelulusan ini \n2. Membawa Fotokopi Akta Kelahiran (2 lembar)\n3. Membawa Fotokopi Kartu Keluarga (2 lembar)\n4. Membawa Pas Foto 3x4 (3 lembar)'}
               </div>
             </div>
 
