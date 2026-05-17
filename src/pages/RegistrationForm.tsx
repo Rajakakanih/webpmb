@@ -296,9 +296,9 @@ export default function RegistrationForm() {
           <div className="w-20 h-20 bg-red-100 text-red-500 rounded-full flex items-center justify-center mx-auto mb-6">
             <AlertCircle size={40} />
           </div>
-          <h2 className="text-2xl font-bold text-slate-900 mb-4">Pendaftaran Ditutup</h2>
+          <h2 className="text-2xl font-bold text-slate-900 mb-4">Pendaftaran Belum Dibuka</h2>
           <p className="text-slate-600 mb-8">
-            Mohon maaf, pendaftaran murid baru saat ini sedang ditutup. Silakan kembali lagi nanti atau hubungi pihak sekolah untuk informasi lebih lanjut.
+            Mohon maaf, pendaftaran murid baru saat ini Belum Dibuka. Silakan kembali lagi nanti atau hubungi pihak sekolah untuk informasi lebih lanjut.
           </p>
           <Link
             to="/"
