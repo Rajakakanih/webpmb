@@ -57,9 +57,9 @@ export default function Home() {
               transition={{ duration: 0.6, delay: 0.1 }}
               className="text-5xl md:text-6xl font-extrabold text-slate-900 tracking-tight leading-tight mb-6"
             >
-              Membangun Generasi <br className="hidden md:block" />
+              Selamat Datang Di Potal <br className="hidden md:block" />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-green-500">
-                Cerdas & Berkarakter
+                Penerimaan Murid Baru (PMB) MTs Manbaul Ulum Astambul
               </span>
             </motion.h1>
             
@@ -97,7 +97,7 @@ export default function Home() {
                 href="#alur"
                 className="inline-flex justify-center items-center gap-2 bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 px-8 py-4 rounded-full text-lg font-semibold transition-all shadow-sm hover:shadow-md"
               >
-                Lihat Alur PPDB
+                Lihat Alur PMB
               </a>
             </motion.div>
           </div>
@@ -123,12 +123,12 @@ export default function Home() {
               {
                 icon: <Users className="text-green-500" size={32} />,
                 title: "Guru Profesional",
-                desc: "Dididik oleh tenaga pengajar tersertifikasi, berpengalaman, dan berdedikasi tinggi pada pendidikan."
+                desc: "Dididik oleh tenaga pengajar bersertifikasi, berpengalaman, dan berdedikasi tinggi pada pendidikan."
               },
               {
                 icon: <Trophy className="text-amber-500" size={32} />,
                 title: "Fasilitas Lengkap",
-                desc: "Ruang kelas nyaman, perpustakaan digital, lab komputer, dan fasilitas olahraga yang memadai."
+                desc: "Ruang kelas nyaman, perpustakaan, ruang komputer, mushalla dan kantin."
               }
             ].map((feature, idx) => (
               <motion.div
@@ -219,9 +219,9 @@ export default function Home() {
         
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">Alur Pendaftaran PPDB</h2>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">Alur Pendaftaran PMB</h2>
             <p className="text-slate-400 max-w-2xl mx-auto text-lg">
-              Ikuti langkah-langkah mudah berikut untuk mendaftarkan putra/putri Anda di SDN Harapan Bangsa.
+              Ikuti langkah-langkah mudah berikut untuk mendaftarkan putra/putri Anda di MTs Manbaul Ulum Astambul.
             </p>
           </div>
 
@@ -234,13 +234,13 @@ export default function Home() {
                 step: "01",
                 icon: <FileText size={28} />,
                 title: "Isi Formulir",
-                desc: "Lengkapi data diri calon siswa dan orang tua secara online."
+                desc: "Lengkapi data diri calon murid dan orang tua secara online."
               },
               {
                 step: "02",
                 icon: <BookOpen size={28} />,
                 title: "Upload Berkas",
-                desc: "Unggah dokumen persyaratan (Foto, KK, Akta Kelahiran)."
+                desc: "Unggah dokumen persyaratan (Foto, KK, Akta Kelahiran, Kartu KIP, PKH, KPS, dan KKS bagi yang memiliki)."
               },
               {
                 step: "03",
