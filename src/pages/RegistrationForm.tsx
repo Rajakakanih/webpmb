@@ -298,7 +298,7 @@ export default function RegistrationForm() {
           </div>
           <h2 className="text-2xl font-bold text-slate-900 mb-4">Pendaftaran Belum Dibuka</h2>
           <p className="text-slate-600 mb-8">
-            Mohon maaf, pendaftaran murid baru saat ini Belum Dibuka. Silakan kembali lagi nanti atau hubungi pihak sekolah untuk informasi lebih lanjut.
+            Mohon maaf, pendaftaran murid baru saat ini belum dibuka. Silakan kembali lagi nanti atau hubungi pihak sekolah untuk informasi lebih lanjut.
           </p>
           <Link
             to="/"
