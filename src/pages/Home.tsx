@@ -83,7 +83,7 @@ export default function Home() {
                   disabled
                   className="inline-flex justify-center items-center gap-2 bg-slate-400 text-white px-8 py-4 rounded-full text-lg font-semibold cursor-not-allowed shadow-sm"
                 >
-                  <AlertCircle size={20} /> Pendaftaran Ditutup
+                  <AlertCircle size={20} /> Pendaftaran Belum Dibuka
                 </button>
               ) : (
                 <Link
