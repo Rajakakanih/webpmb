@@ -58,11 +58,11 @@ export default function CheckStatus() {
         
         doc.setFontSize(16);
         doc.setFont('helvetica', 'bold');
-        doc.text('BUKTI KELULUSAN PMB MTs MANBAUL ULUM ASTAMBUL', 105, currentY, { align: 'center' });
+        doc.text('BUKTI KELULUSAN PPDB', 105, currentY, { align: 'center' });
         currentY += 8;
-        doc.setFontSize(16);
-        doc.setFont('helvetica', 'bold');
-        doc.text(`TAHUN AJARAN ${new Date().getFullYear()}/${new Date().getFullYear() + 1}`, 105, currentY, { align: 'center' });
+        doc.setFontSize(12);
+        doc.setFont('helvetica', 'normal');
+        doc.text(`Tahun Ajaran ${new Date().getFullYear()}/${new Date().getFullYear() + 1}`, 105, currentY, { align: 'center' });
         currentY += 6;
         if (settings?.nomorSurat) {
           doc.setFontSize(11);
@@ -74,11 +74,11 @@ export default function CheckStatus() {
         console.error("Error adding kop surat", e);
         doc.setFontSize(16);
         doc.setFont('helvetica', 'bold');
-        doc.text('BUKTI KELULUSAN PMB MTs MANBAUL ULUM ASTAMBUL', 105, currentY, { align: 'center' });
+        doc.text('BUKTI KELULUSAN PPDB', 105, currentY, { align: 'center' });
         currentY += 8;
-        doc.setFontSize(16);
-        doc.setFont('helvetica', 'bold');
-        doc.text(`TAHUN AJARAN ${new Date().getFullYear()}/${new Date().getFullYear() + 1}`, 105, currentY, { align: 'center' });
+        doc.setFontSize(12);
+        doc.setFont('helvetica', 'normal');
+        doc.text(`Tahun Ajaran ${new Date().getFullYear()}/${new Date().getFullYear() + 1}`, 105, currentY, { align: 'center' });
         currentY += 6;
         if (settings?.nomorSurat) {
           doc.setFontSize(11);
@@ -91,11 +91,11 @@ export default function CheckStatus() {
     } else {
       doc.setFontSize(16);
       doc.setFont('helvetica', 'bold');
-      doc.text('BUKTI KELULUSAN PMB MTs MANBAUL ULUM ASTAMBUL', 105, currentY, { align: 'center' });
+      doc.text('BUKTI KELULUSAN PPDB', 105, currentY, { align: 'center' });
       currentY += 8;
-      doc.setFontSize(16);
-      doc.setFont('helvetica', 'bold');
-      doc.text(`TAHUN AJARAN ${new Date().getFullYear()}/${new Date().getFullYear() + 1}`, 105, currentY, { align: 'center' });
+      doc.setFontSize(12);
+      doc.setFont('helvetica', 'normal');
+      doc.text(`Tahun Ajaran ${new Date().getFullYear()}/${new Date().getFullYear() + 1}`, 105, currentY, { align: 'center' });
       currentY += 6;
       if (settings?.nomorSurat) {
         doc.setFontSize(11);
@@ -108,7 +108,7 @@ export default function CheckStatus() {
     
     // Content
     doc.setFontSize(11);
-    doc.text('Berdasarkan hasil seleksi Penerimaan Murid Baru (PMB) MTs Manbaul Ulum Astambul,', 20, currentY);
+    doc.text('Berdasarkan hasil seleksi Penerimaan Peserta Didik Baru (PPDB),', 20, currentY);
     currentY += 7;
     doc.text('menyatakan bahwa:', 20, currentY);
     currentY += 13;
@@ -138,7 +138,7 @@ export default function CheckStatus() {
     doc.text('Diharapkan segera melakukan daftar ulang dengan membawa persyaratan berikut:', 20, currentY);
     
     currentY += lineSpacing;
-    const reqText = settings?.persyaratanDaftarUlang || '1. Memperlihatkan Bukti Kelulusan ini \n2. Fotokopi Akta Kelahiran (2 lembar)\n3. Fotokopi Kartu Keluarga (2 lembar)\n4. Pas Foto 3x4 (3 lembar) ';
+    const reqText = settings?.persyaratanDaftarUlang || '1. Bukti Kelulusan ini (dicetak)\n2. Fotokopi Akta Kelahiran (2 lembar)\n3. Fotokopi Kartu Keluarga (2 lembar)\n4. Pas Foto 3x4 (4 lembar)\n5. Melakukan pembayaran administrasi awal';
     const splitReq = doc.splitTextToSize(reqText, 160);
     doc.text(splitReq, 25, currentY);
     
@@ -151,7 +151,7 @@ export default function CheckStatus() {
     const tanggal = settings?.tanggalSurat || dateStr;
     
     doc.text(`${tempat}, ${tanggal}`, 140, currentY);
-    doc.text('Kepala Madrasah', 140, currentY + 6);
+    doc.text('Kepala Sekolah', 140, currentY + 6);
     
     if (settings?.stempelSekolah) {
       try {
@@ -221,7 +221,7 @@ export default function CheckStatus() {
                 <p className="text-sm text-green-700 mb-2 font-medium">Tanggal Daftar Ulang: {new Date(settings.tanggalDaftarUlang).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
               )}
               <div className="text-sm text-green-700 whitespace-pre-line">
-                {settings?.persyaratanDaftarUlang || '1. Memperlihatkan Bukti Kelulusan ini\n2. Membawa Fotokopi Akta Kelahiran (2 lembar)\n3. Membawa Fotokopi Kartu Keluarga (2 lembar)\n4. Membawa Pas Foto 3x4 (3 lembar) '}
+                {settings?.persyaratanDaftarUlang || '1. Membawa Bukti Kelulusan yang dicetak\n2. Membawa Fotokopi Akta Kelahiran (2 lembar)\n3. Membawa Fotokopi Kartu Keluarga (2 lembar)\n4. Membawa Pas Foto 3x4 (4 lembar)\n5. Melakukan pembayaran administrasi awal'}
               </div>
             </div>
 
@@ -281,7 +281,7 @@ export default function CheckStatus() {
         >
           <div className="bg-gradient-to-r from-blue-600 to-blue-800 px-8 py-8 text-white text-center">
             <h2 className="text-2xl font-bold mb-2">Cek Status Kelulusan</h2>
-            <p className="text-blue-100 text-sm">Masukkan nomor pendaftaran Anda untuk melihat hasil seleksi PMB.</p>
+            <p className="text-blue-100 text-sm">Masukkan nomor pendaftaran Anda untuk melihat hasil seleksi PPDB.</p>
           </div>
 
           <div className="p-8">
@@ -294,7 +294,7 @@ export default function CheckStatus() {
                   value={noPendaftaran}
                   onChange={(e) => setNoPendaftaran(e.target.value)}
                   className="flex-grow px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
-                  placeholder="Contoh: PMB-2026-001"
+                  placeholder="Contoh: PPDB-2024-001"
                 />
                 <button
                   type="submit"
