@@ -58,7 +58,7 @@ export default function CheckStatus() {
         
         doc.setFontSize(16);
         doc.setFont('helvetica', 'bold');
-        doc.text('BUKTI KELULUSAN PPDB', 105, currentY, { align: 'center' });
+        doc.text('BUKTI KELULUSAN PMB', 105, currentY, { align: 'center' });
         currentY += 8;
         doc.setFontSize(12);
         doc.setFont('helvetica', 'normal');
@@ -91,7 +91,7 @@ export default function CheckStatus() {
     } else {
       doc.setFontSize(16);
       doc.setFont('helvetica', 'bold');
-      doc.text('BUKTI KELULUSAN PPDB', 105, currentY, { align: 'center' });
+      doc.text('BUKTI KELULUSAN PMB', 105, currentY, { align: 'center' });
       currentY += 8;
       doc.setFontSize(12);
       doc.setFont('helvetica', 'normal');
@@ -108,7 +108,7 @@ export default function CheckStatus() {
     
     // Content
     doc.setFontSize(11);
-    doc.text('Berdasarkan hasil seleksi Penerimaan Peserta Didik Baru (PPDB),', 20, currentY);
+    doc.text('Berdasarkan hasil seleksi Penerimaan Murid Baru (PMB),', 20, currentY);
     currentY += 7;
     doc.text('menyatakan bahwa:', 20, currentY);
     currentY += 13;
@@ -221,7 +221,7 @@ export default function CheckStatus() {
                 <p className="text-sm text-green-700 mb-2 font-medium">Tanggal Daftar Ulang: {new Date(settings.tanggalDaftarUlang).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
               )}
               <div className="text-sm text-green-700 whitespace-pre-line">
-                {settings?.persyaratanDaftarUlang || '1. Membawa Bukti Kelulusan yang dicetak\n2. Membawa Fotokopi Akta Kelahiran (2 lembar)\n3. Membawa Fotokopi Kartu Keluarga (2 lembar)\n4. Membawa Pas Foto 3x4 (4 lembar)\n5. Melakukan pembayaran administrasi awal'}
+                {settings?.persyaratanDaftarUlang || '1. Memperlihatkan Bukti Kelulusan \n2. Membawa Fotokopi Akta Kelahiran (2 lembar)\n3. Membawa Fotokopi Kartu Keluarga (2 lembar)\n4. Membawa Pas Foto 3x4 (3 lembar)'}
               </div>
             </div>
 
@@ -281,7 +281,7 @@ export default function CheckStatus() {
         >
           <div className="bg-gradient-to-r from-blue-600 to-blue-800 px-8 py-8 text-white text-center">
             <h2 className="text-2xl font-bold mb-2">Cek Status Kelulusan</h2>
-            <p className="text-blue-100 text-sm">Masukkan nomor pendaftaran Anda untuk melihat hasil seleksi PPDB.</p>
+            <p className="text-blue-100 text-sm">Masukkan nomor pendaftaran Anda untuk melihat hasil seleksi PMB.</p>
           </div>
 
           <div className="p-8">
@@ -294,7 +294,7 @@ export default function CheckStatus() {
                   value={noPendaftaran}
                   onChange={(e) => setNoPendaftaran(e.target.value)}
                   className="flex-grow px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
-                  placeholder="Contoh: PPDB-2024-001"
+                  placeholder="Contoh: PMB-2026-001"
                 />
                 <button
                   type="submit"
