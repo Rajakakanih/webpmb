@@ -148,7 +148,6 @@ export default function RegistrationForm() {
     }
   };
 
-  // FUNGSI BARU: Untuk menghapus data di localStorage dan reset state form
   const handleClearData = () => {
     Swal.fire({
       title: 'Hapus Data Formulir?',
