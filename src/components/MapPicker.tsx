@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
-import { MapContainer, TileLayer, Marker, useMapEvents } from 'react-leaflet';
+import React, { useState, useEffect } from 'react';
+import { MapContainer, TileLayer, Marker, useMapEvents, useMap } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
+import 'leaflet-geosearch/dist/geosearch.css'; // Import CSS pencarian
 import L from 'leaflet';
-import { Layers, Map } from 'lucide-react'; // Menggunakan lucide-react agar serasi dengan Navbar sebelumnya
+import { Layers, Map } from 'lucide-react';
+import { GeoSearchControl, OpenStreetMapProvider } from 'leaflet-geosearch';
 
 // Fix Leaflet icon issue
 delete (L.Icon.Default.prototype as any)._getIconUrl;
@@ -17,14 +19,23 @@ interface MapPickerProps {
   initialLocation?: { lat: number; lng: number };
 }
 
-function LocationMarker({ onLocationSelect, initialLocation }: MapPickerProps) {
+// Komponen Pengendali Klik Manual pada Peta
+function LocationMarker({ onLocationSelect, initialLocation, setCenter }: MapPickerProps & { setCenter: React.Dispatch<React.SetStateAction<{ lat: number; lng: number }>> }) {
   const [position, setPosition] = useState<L.LatLng | null>(
     initialLocation ? new L.LatLng(initialLocation.lat, initialLocation.lng) : null
   );
 
+  // Sinkronisasi posisi marker jika initialLocation (center) berubah dari luar (misal dari GPS/Pencarian)
+  useEffect(() => {
+    if (initialLocation) {
+      setPosition(new L.LatLng(initialLocation.lat, initialLocation.lng));
+    }
+  }, [initialLocation]);
+
   useMapEvents({
     click(e) {
       setPosition(e.latlng);
+      setCenter({ lat: e.latlng.lat, lng: e.latlng.lng });
       onLocationSelect(e.latlng.lat, e.latlng.lng);
     },
   });
@@ -34,12 +45,52 @@ function LocationMarker({ onLocationSelect, initialLocation }: MapPickerProps) {
   );
 }
 
+// Komponen untuk Kotak Pencarian Alamat
+function SearchField({ onLocationSelect, setCenter }: { onLocationSelect: (lat: number, lng: number) => void; setCenter: React.Dispatch<React.SetStateAction<{ lat: number; lng: number }>> }) {
+  const map = useMap();
+
+  useEffect(() => {
+    const provider = new OpenStreetMapProvider({
+      params: {
+        'accept-language': 'id', // Mengutamakan hasil pencarian dalam Bahasa Indonesia
+        countrycodes: 'id',     // Batasi pencarian hanya di Indonesia (opsional, hapus jika ingin global)
+      },
+    });
+
+    // @ts-ignore
+    const searchControl = new GeoSearchControl({
+      provider: provider,
+      style: 'bar', // Menggunakan gaya 'bar' agar terlihat rapi di pojok kiri atas
+      showMarker: false, // Dimatikan karena kita menggunakan custom LocationMarker di atas
+      showPopup: false,
+      autoClose: true,
+      retainZoomLevel: false,
+      animateZoom: true,
+      searchLabel: 'Cari alamat atau tempat...',
+    });
+
+    map.addControl(searchControl);
+
+    // Event ketika user memilih lokasi dari hasil pencarian
+    map.on('geosearch/showlocation', (result: any) => {
+      const { x: lng, y: lat } = result.location;
+      setCenter({ lat, lng });
+      onLocationSelect(lat, lng);
+    });
+
+    return () => {
+      map.removeControl(searchControl);
+    };
+  }, [map, onLocationSelect, setCenter]);
+
+  return null;
+}
+
 export default function MapPicker({ onLocationSelect, initialLocation }: MapPickerProps) {
   const defaultCenter = initialLocation || { lat: -6.200000, lng: 106.816666 };
   const [center, setCenter] = useState<{lat: number, lng: number}>(defaultCenter);
   const [mapKey, setMapKey] = useState(0); 
   
-  // State baru untuk mengatur tipe peta: 'streets' atau 'satellite'
   const [mapMode, setMapMode] = useState<'streets' | 'satellite'>('streets');
 
   const handleGetLocation = () => {
@@ -72,7 +123,7 @@ export default function MapPicker({ onLocationSelect, initialLocation }: MapPick
         Gunakan Lokasi Saat Ini
       </button>
 
-      <div className="h-[300px] w-full rounded-lg overflow-hidden border border-slate-300 z-0 relative shadow-inner">
+      <div className="h-[350px] w-full rounded-lg overflow-hidden border border-slate-300 z-0 relative shadow-inner">
         
         {/* Tombol Switcher Mode Peta Futuristik di Atas Peta */}
         <div className="absolute top-3 right-3 z-[1000] flex bg-white/90 backdrop-blur-md p-1 rounded-xl border border-slate-200/80 shadow-lg">
@@ -118,7 +169,11 @@ export default function MapPicker({ onLocationSelect, initialLocation }: MapPick
             />
           )}
 
-          <LocationMarker onLocationSelect={onLocationSelect} initialLocation={center} />
+          {/* Menambahkan Fitur Pencarian */}
+          <SearchField onLocationSelect={onLocationSelect} setCenter={setCenter} />
+
+          {/* Marker Lokasi Aktif */}
+          <LocationMarker onLocationSelect={onLocationSelect} initialLocation={center} setCenter={setCenter} />
         </MapContainer>
       </div>
     </div>
