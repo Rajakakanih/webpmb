@@ -157,7 +157,7 @@ export default function RegistrationForm() {
     doc.setTextColor(255, 255, 255);
     doc.setFontSize(22);
     doc.setFont("helvetica", "bold");
-    doc.text("BUKTI PENDAFTARAN PMB", 105, 20, { align: "center" });
+    doc.text("BUKTI PENDAFTARAN PPDB", 105, 20, { align: "center" });
     doc.setFontSize(14);
     doc.setFont("helvetica", "normal");
     doc.text(settings?.namaSekolah || "SDN Harapan Bangsa", 105, 30, { align: "center" });
@@ -189,6 +189,11 @@ export default function RegistrationForm() {
     
     settings?.formFields?.forEach(field => {
       if (field.type !== 'file') {
+        if (startY > 260) {
+          doc.addPage();
+          startY = 20;
+        }
+
         doc.text(field.label, 20, startY);
         doc.text(":", 70, startY);
         let value = formData[field.label] || '-';
@@ -198,12 +203,22 @@ export default function RegistrationForm() {
         
         // Handle long text
         const splitText = doc.splitTextToSize(value, 115);
+        
+        // check if splitText pushes startY over length, maybe rare to have super long single line though
+        if (startY + (lineHeight * splitText.length) > 280) {
+           doc.addPage();
+           startY = 20;
+        }
+        
         doc.text(splitText, 75, startY);
         startY += lineHeight * splitText.length;
       }
     });
 
     // Footer
+    if (startY > 270) {
+      doc.addPage();
+    }
     doc.setFontSize(10);
     doc.setTextColor(100, 100, 100);
     doc.text("Simpan bukti pendaftaran ini untuk mengecek status kelulusan.", 105, 280, { align: "center" });
@@ -296,9 +311,9 @@ export default function RegistrationForm() {
           <div className="w-20 h-20 bg-red-100 text-red-500 rounded-full flex items-center justify-center mx-auto mb-6">
             <AlertCircle size={40} />
           </div>
-          <h2 className="text-2xl font-bold text-slate-900 mb-4">Pendaftaran Belum Dibuka</h2>
+          <h2 className="text-2xl font-bold text-slate-900 mb-4">Pendaftaran Ditutup</h2>
           <p className="text-slate-600 mb-8">
-            Mohon maaf, pendaftaran murid baru saat ini belum dibuka. Silakan kembali lagi nanti atau hubungi pihak sekolah untuk informasi lebih lanjut.
+            Mohon maaf, pendaftaran peserta didik baru saat ini sedang ditutup. Silakan kembali lagi nanti atau hubungi pihak sekolah untuk informasi lebih lanjut.
           </p>
           <Link
             to="/"
@@ -401,8 +416,8 @@ export default function RegistrationForm() {
           className="bg-white rounded-2xl shadow-xl overflow-hidden border border-slate-100"
         >
           <div className="bg-gradient-to-r from-blue-600 to-blue-800 px-8 py-10 text-white text-center">
-            <h2 className="text-3xl font-bold mb-2">Formulir Pendaftaran PMB</h2>
-            <p className="text-blue-100">Lengkapi data diri calon murid dengan benar dan valid.</p>
+            <h2 className="text-3xl font-bold mb-2">Formulir Pendaftaran PPDB</h2>
+            <p className="text-blue-100">Lengkapi data diri calon peserta didik dengan benar dan valid.</p>
           </div>
 
           <form onSubmit={handleSubmit} className="p-8 space-y-8">
