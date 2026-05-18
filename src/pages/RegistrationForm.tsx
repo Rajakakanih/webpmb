@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'motion/react';
-import { Upload, AlertCircle, FileText, Image as ImageIcon, Loader2, MapPin } from 'lucide-react';
+import { Upload, AlertCircle, FileText, Image as ImageIcon, Loader2, MapPin, Trash2 } from 'lucide-react'; // Menambahkan Trash2 icon
 import Swal from 'sweetalert2';
 import { Link } from 'react-router-dom';
 import { submitRegistration, RegistrationData } from '../services/api';
@@ -148,6 +148,43 @@ export default function RegistrationForm() {
     }
   };
 
+  // FUNGSI BARU: Untuk menghapus data di localStorage dan reset state form
+  const handleClearData = () => {
+    Swal.fire({
+      title: 'Hapus Data Formulir?',
+      text: "Semua data yang telah Anda ketik dan unggah akan dihapus secara permanen dari browser ini.",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#ef4444', // Red-500
+      cancelButtonColor: '#64748b',  // Slate-500
+      confirmButtonText: 'Ya, Hapus Semua',
+      cancelButtonText: 'Batal'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // Hapus dari localStorage
+        localStorage.removeItem('registration_form_data');
+        localStorage.removeItem('registration_form_previews');
+        localStorage.removeItem('registration_form_location');
+        localStorage.removeItem('registration_form_distance');
+        
+        // Reset state aplikasi
+        setFormData({});
+        setPreviews({});
+        setMapLocation(null);
+        setDistance(null);
+        setIsAgreed(false);
+
+        Swal.fire({
+          icon: 'success',
+          title: 'Berhasil Dihapus',
+          text: 'Formulir telah dikosongkan kembali.',
+          confirmButtonColor: '#3b82f6',
+          timer: 1500
+        });
+      }
+    });
+  };
+
   const printProof = (noPendaftaran: string) => {
     const doc = new jsPDF();
     
@@ -163,68 +200,69 @@ export default function RegistrationForm() {
     doc.text(settings?.namaSekolah || "SDN Harapan Bangsa", 105, 30, { align: "center" });
 
     // Content
-   doc.setTextColor(0, 0, 0);
-doc.setFontSize(11);
+    doc.setTextColor(0, 0, 0);
+    doc.setFontSize(11);
 
-let startY = 60;
-const rowSpacing = 5;
+    let startY = 60;
+    const rowSpacing = 5;
 
-const formatDate = (dateString: string) => {
-  if (!dateString) return '-';
-  const date = new Date(dateString);
-  if (isNaN(date.getTime())) return dateString;
-  const day = String(date.getDate()).padStart(2, '0');
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const year = date.getFullYear();
-  return `${day}/${month}/${year}`;
-};
+    const formatDate = (dateString: string) => {
+      if (!dateString) return '-';
+      const date = new Date(dateString);
+      if (isNaN(date.getTime())) return dateString;
+      const day = String(date.getDate()).padStart(2, '0');
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const year = date.getFullYear();
+      return `${day}/${month}/${year}`;
+    };
 
-doc.setFont("helvetica", "bold");
-doc.text("No. Pendaftaran", 20, startY);
-doc.text(":", 85, startY);
-doc.text(noPendaftaran, 90, startY);
-startY += 10;
-
-doc.setFont("helvetica", "normal");
-
-settings?.formFields?.forEach(field => {
-  if (field.type !== 'file') {
-    let value = formData[field.label] || '-';
-    if (field.type === 'date') {
-      value = formatDate(value);
-    }
-    
-    const maxLabelWidth = 60;
-    const maxValueWidth = 105;
-    
-    const splitLabel = doc.splitTextToSize(field.label, maxLabelWidth);
-    const splitValue = doc.splitTextToSize(String(value), maxValueWidth);
-    
-    const labelDim = doc.getTextDimensions(splitLabel);
-    const valueDim = doc.getTextDimensions(splitValue);
-    const blockHeight = Math.max(labelDim.h, valueDim.h);
-    
-    if (startY + blockHeight > 260) { 
-       doc.addPage();
-       doc.setFont("helvetica", "normal");
-       doc.setFontSize(11);
-       doc.setTextColor(0, 0, 0);
-       startY = 25;
-    }
-    
-    doc.text(splitLabel, 20, startY);
+    doc.setFont("helvetica", "bold");
+    doc.text("No. Pendaftaran", 20, startY);
     doc.text(":", 85, startY);
-    doc.text(splitValue, 90, startY);
-    
-    startY += blockHeight + rowSpacing;
-  }
-});
+    doc.text(noPendaftaran, 90, startY);
+    startY += 10;
 
-doc.setFontSize(10);
-doc.setTextColor(100, 100, 100);
-doc.text("Simpan bukti pendaftaran ini untuk mengecek status kelulusan.", 105, 280, { align: "center" });
+    doc.setFont("helvetica", "normal");
 
-doc.save(`Bukti_Pendaftaran_${noPendaftaran}.pdf`);
+    settings?.formFields?.forEach(field => {
+      if (field.type !== 'file') {
+        let value = formData[field.label] || '-';
+        if (field.type === 'date') {
+          value = formatDate(value);
+        }
+        
+        const maxLabelWidth = 60;
+        const maxValueWidth = 105;
+        
+        const splitLabel = doc.splitTextToSize(field.label, maxLabelWidth);
+        const splitValue = doc.splitTextToSize(String(value), maxValueWidth);
+        
+        const labelDim = doc.getTextDimensions(splitLabel);
+        const valueDim = doc.getTextDimensions(splitValue);
+        const blockHeight = Math.max(labelDim.h, valueDim.h);
+        
+        if (startY + blockHeight > 260) { 
+           doc.addPage();
+           doc.setFont("helvetica", "normal");
+           doc.setFontSize(11);
+           doc.setTextColor(0, 0, 0);
+           startY = 25;
+        }
+        
+        doc.text(splitLabel, 20, startY);
+        doc.text(":", 85, startY);
+        doc.text(splitValue, 90, startY);
+        
+        startY += blockHeight + rowSpacing;
+      }
+    });
+
+    doc.setFontSize(10);
+    doc.setTextColor(100, 100, 100);
+    doc.text("Simpan bukti pendaftaran ini untuk mengecek status kelulusan.", 105, 280, { align: "center" });
+
+    doc.save(`Bukti_Pendaftaran_${noPendaftaran}.pdf`);
+  };
     
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -501,11 +539,22 @@ doc.save(`Bukti_Pendaftaran_${noPendaftaran}.pdf`);
               </label>
             </div>
 
-            <div className="pt-4 border-t border-slate-100">
+            {/* Bagian Tombol Aksi (Kirim & Hapus Data) */}
+            <div className="pt-4 border-t border-slate-100 flex flex-col sm:flex-row gap-4">
+              <button
+                type="button"
+                onClick={handleClearData}
+                disabled={isSubmitting}
+                className="w-full sm:w-auto px-6 py-4 bg-slate-100 hover:bg-red-50 text-slate-600 hover:text-red-600 font-semibold rounded-xl transition-all border border-slate-200 hover:border-red-200 flex items-center justify-center gap-2 disabled:opacity-50"
+              >
+                <Trash2 size={20} />
+                Hapus Data / Reset
+              </button>
+              
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-xl font-bold text-lg transition-all shadow-md hover:shadow-lg disabled:opacity-70 flex items-center justify-center"
+                className="flex-1 bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-xl font-bold text-lg transition-all shadow-md hover:shadow-lg disabled:opacity-70 flex items-center justify-center"
               >
                 {isSubmitting ? (
                   <>
