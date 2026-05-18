@@ -1,5 +1,5 @@
 /**
- * Google Apps Script Backend for PPDB SD
+ * Google Apps Script Backend for PMB MTs
  * Deploy as a Web App:
  * 1. Click "Deploy" -> "New deployment"
  * 2. Select type: "Web app"
@@ -11,7 +11,7 @@
 const SHEET_NAME = "Data Pendaftar";
 const ADMIN_SHEET_NAME = "Admin";
 const SETTINGS_SHEET_NAME = "Pengaturan";
-const FOLDER_NAME = "PPDB SD";
+const FOLDER_NAME = "PMB MTs";
 
 const DEFAULT_FORM_FIELDS = [
   { id: "Nama Lengkap", label: "Nama Lengkap", type: "text", required: true },
@@ -28,7 +28,7 @@ const DEFAULT_FORM_FIELDS = [
 ];
 
 const DEFAULT_SETTINGS = {
-  namaSekolah: "SDN Harapan Bangsa",
+  namaSekolah: "MTs Manbaul Ulum Astambul",
   alamat: "Jl. Pendidikan No. 123, Kota Pelajar, Indonesia 12345",
   telepon: "(021) 1234-5678",
   email: "info@sdnharapanbangsa.sch.id",
@@ -237,7 +237,7 @@ function handleRegistration(data) {
       }
     }
   }
-  const noPendaftaran = `PPDB-${year}-${String(nextId).padStart(3, '0')}`;
+  const noPendaftaran = `PMB-${year}-${String(nextId).padStart(3, '0')}`;
   
   const folder = getOrCreateFolder(FOLDER_NAME);
   const rowData = new Array(headers.length).fill("");
