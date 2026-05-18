@@ -167,7 +167,7 @@ export default function RegistrationForm() {
 doc.setFontSize(11);
 
 let startY = 60;
-const fontHeight = 7;
+const fontHeight = 6;
 const rowSpacing = 3;
 
 const formatDate = (dateString: string) => {
@@ -182,8 +182,8 @@ const formatDate = (dateString: string) => {
 
 doc.setFont("helvetica", "bold");
 doc.text("No. Pendaftaran", 20, startY);
-doc.text(":", 70, startY);
-doc.text(noPendaftaran, 75, startY);
+doc.text(":", 85, startY);
+doc.text(noPendaftaran, 90, startY);
 startY += 12;
 
 doc.setFont("helvetica", "normal");
@@ -195,8 +195,8 @@ settings?.formFields?.forEach(field => {
       value = formatDate(value);
     }
     
-    const maxLabelWidth = 45;
-    const maxValueWidth = 115;
+    const maxLabelWidth = 60;
+    const maxValueWidth = 105;
     
     const splitLabel = doc.splitTextToSize(field.label, maxLabelWidth);
     const splitValue = doc.splitTextToSize(String(value), maxValueWidth);
@@ -206,12 +206,15 @@ settings?.formFields?.forEach(field => {
     
     if (startY + fieldBlockHeight > 255) { 
        doc.addPage();
+       doc.setFont("helvetica", "normal");
+       doc.setFontSize(11);
+       doc.setTextColor(0, 0, 0);
        startY = 25;
     }
     
     doc.text(splitLabel, 20, startY);
-    doc.text(":", 70, startY);
-    doc.text(splitValue, 75, startY);
+    doc.text(":", 85, startY);
+    doc.text(splitValue, 90, startY);
     
     startY += fieldBlockHeight + rowSpacing;
   }
