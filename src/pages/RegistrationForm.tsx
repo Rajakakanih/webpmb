@@ -313,7 +313,7 @@ export default function RegistrationForm() {
           </div>
           <h2 className="text-2xl font-bold text-slate-900 mb-4">Pendaftaran Ditutup</h2>
           <p className="text-slate-600 mb-8">
-            Mohon maaf, pendaftaran peserta didik baru saat ini sedang ditutup. Silakan kembali lagi nanti atau hubungi pihak sekolah untuk informasi lebih lanjut.
+            Mohon maaf, pendaftaran peserta murid saat ini sedang ditutup. Silakan kembali lagi nanti atau hubungi pihak sekolah untuk informasi lebih lanjut.
           </p>
           <Link
             to="/"
