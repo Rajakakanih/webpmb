@@ -164,68 +164,68 @@ export default function RegistrationForm() {
 
     // Content
     doc.setTextColor(0, 0, 0);
-    doc.setFontSize(12);
-    
-    let startY = 60;
-    const lineHeight = 10;
-    
-    const formatDate = (dateString: string) => {
-      if (!dateString) return '-';
-      const date = new Date(dateString);
-      if (isNaN(date.getTime())) return dateString;
-      const day = String(date.getDate()).padStart(2, '0');
-      const month = String(date.getMonth() + 1).padStart(2, '0');
-      const year = date.getFullYear();
-      return `${day}/${month}/${year}`;
-    };
-    
-    doc.setFont("helvetica", "bold");
-    doc.text("No. Pendaftaran", 20, startY);
-    doc.text(":", 70, startY);
-    doc.text(noPendaftaran, 75, startY);
-    startY += lineHeight;
+doc.setFontSize(11);
 
-    doc.setFont("helvetica", "normal");
-    
-    settings?.formFields?.forEach(field => {
-      if (field.type !== 'file') {
-        if (startY > 260) {
-          doc.addPage();
-          startY = 20;
-        }
+let startY = 60;
+const fontHeight = 7;
+const rowSpacing = 3;
 
-        doc.text(field.label, 20, startY);
-        doc.text(":", 70, startY);
-        let value = formData[field.label] || '-';
-        if (field.type === 'date') {
-          value = formatDate(value);
-        }
-        
-        // Handle long text
-        const splitText = doc.splitTextToSize(value, 115);
-        
-        // check if splitText pushes startY over length, maybe rare to have super long single line though
-        if (startY + (lineHeight * splitText.length) > 280) {
-           doc.addPage();
-           startY = 20;
-        }
-        
-        doc.text(splitText, 75, startY);
-        startY += lineHeight * splitText.length;
-      }
-    });
+const formatDate = (dateString: string) => {
+  if (!dateString) return '-';
+  const date = new Date(dateString);
+  if (isNaN(date.getTime())) return dateString;
+  const day = String(date.getDate()).padStart(2, '0');
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const year = date.getFullYear();
+  return `${day}/${month}/${year}`;
+};
 
-    // Footer
-    if (startY > 270) {
-      doc.addPage();
+doc.setFont("helvetica", "bold");
+doc.text("No. Pendaftaran", 20, startY);
+doc.text(":", 70, startY);
+doc.text(noPendaftaran, 75, startY);
+startY += 12;
+
+doc.setFont("helvetica", "normal");
+
+settings?.formFields?.forEach(field => {
+  if (field.type !== 'file') {
+    let value = formData[field.label] || '-';
+    if (field.type === 'date') {
+      value = formatDate(value);
     }
-    doc.setFontSize(10);
-    doc.setTextColor(100, 100, 100);
-    doc.text("Simpan bukti pendaftaran ini untuk mengecek status kelulusan.", 105, 280, { align: "center" });
     
-    doc.save(`Bukti_Pendaftaran_${noPendaftaran}.pdf`);
-  };
+    const maxLabelWidth = 45;
+    const maxValueWidth = 115;
+    
+    const splitLabel = doc.splitTextToSize(field.label, maxLabelWidth);
+    const splitValue = doc.splitTextToSize(String(value), maxValueWidth);
+    
+    const maxLines = Math.max(splitLabel.length, splitValue.length);
+    const fieldBlockHeight = maxLines * fontHeight;
+    
+    if (startY + fieldBlockHeight > 255) { 
+       doc.addPage();
+       startY = 25;
+    }
+    
+    doc.text(splitLabel, 20, startY);
+    doc.text(":", 70, startY);
+    doc.text(splitValue, 75, startY);
+    
+    startY += fieldBlockHeight + rowSpacing;
+  }
+});
 
+if (startY > 265) {
+  doc.addPage();
+}
+doc.setFontSize(10);
+doc.setTextColor(100, 100, 100);
+doc.text("Simpan bukti pendaftaran ini untuk mengecek status kelulusan.", 105, 280, { align: "center" });
+
+doc.save(`Bukti_Pendaftaran_${noPendaftaran}.pdf`);
+    
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
