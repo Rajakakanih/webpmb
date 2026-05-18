@@ -163,12 +163,11 @@ export default function RegistrationForm() {
     doc.text(settings?.namaSekolah || "SDN Harapan Bangsa", 105, 30, { align: "center" });
 
     // Content
-    doc.setTextColor(0, 0, 0);
+   doc.setTextColor(0, 0, 0);
 doc.setFontSize(11);
 
 let startY = 60;
-const fontHeight = 6;
-const rowSpacing = 3;
+const rowSpacing = 5;
 
 const formatDate = (dateString: string) => {
   if (!dateString) return '-';
@@ -184,7 +183,7 @@ doc.setFont("helvetica", "bold");
 doc.text("No. Pendaftaran", 20, startY);
 doc.text(":", 85, startY);
 doc.text(noPendaftaran, 90, startY);
-startY += 12;
+startY += 10;
 
 doc.setFont("helvetica", "normal");
 
@@ -201,10 +200,11 @@ settings?.formFields?.forEach(field => {
     const splitLabel = doc.splitTextToSize(field.label, maxLabelWidth);
     const splitValue = doc.splitTextToSize(String(value), maxValueWidth);
     
-    const maxLines = Math.max(splitLabel.length, splitValue.length);
-    const fieldBlockHeight = maxLines * fontHeight;
+    const labelDim = doc.getTextDimensions(splitLabel);
+    const valueDim = doc.getTextDimensions(splitValue);
+    const blockHeight = Math.max(labelDim.h, valueDim.h);
     
-    if (startY + fieldBlockHeight > 255) { 
+    if (startY + blockHeight > 260) { 
        doc.addPage();
        doc.setFont("helvetica", "normal");
        doc.setFontSize(11);
@@ -216,13 +216,10 @@ settings?.formFields?.forEach(field => {
     doc.text(":", 85, startY);
     doc.text(splitValue, 90, startY);
     
-    startY += fieldBlockHeight + rowSpacing;
+    startY += blockHeight + rowSpacing;
   }
 });
 
-if (startY > 265) {
-  doc.addPage();
-}
 doc.setFontSize(10);
 doc.setTextColor(100, 100, 100);
 doc.text("Simpan bukti pendaftaran ini untuk mengecek status kelulusan.", 105, 280, { align: "center" });
