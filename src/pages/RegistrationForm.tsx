@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { motion } from 'motion/react';
+import { motion } from 'framer-motion'; // PERBAIKAN: Biasanya di-import dari 'framer-motion'
 import { Upload, AlertCircle, FileText, Image as ImageIcon, Loader2, MapPin } from 'lucide-react';
 import Swal from 'sweetalert2';
-import { Link, useNavigate } from 'react-router-dom'; // ✔️ Ditambahkan useNavigate di sini
+import { Link } from 'react-router-dom';
 import { submitRegistration, RegistrationData } from '../services/api';
 import { useSettings } from '../context/SettingsContext';
 import jsPDF from 'jspdf';
@@ -12,7 +12,6 @@ import { calculateDistance } from '../utils/distance';
 export default function RegistrationForm() {
   const { settings } = useSettings();
   const isClosed = settings?.statusPendaftaran === 'Tutup';
-  const navigate = useNavigate(); // ✔️ Inisialisasi hook navigate
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isAgreed, setIsAgreed] = useState(false);
@@ -102,7 +101,7 @@ export default function RegistrationForm() {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // Batasan file maksimal 5MB
+    // 1. PERBAIKAN: Ubah ukuran maksimal file menjadi 5MB (5 * 1024 * 1024)
     if (file.size > 5 * 1024 * 1024) {
       Swal.fire({
         icon: 'error',
@@ -117,8 +116,10 @@ export default function RegistrationForm() {
     try {
       let base64String = '';
       if (file.type.startsWith('image/')) {
+        // Compress images to save localStorage space and speed up upload
         base64String = await compressImage(file, 1024);
       } else {
+        // For PDFs and other files, convert directly
         base64String = await new Promise((resolve) => {
           const reader = new FileReader();
           reader.onloadend = () => resolve(reader.result as string);
@@ -151,7 +152,7 @@ export default function RegistrationForm() {
     const doc = new jsPDF();
     
     // Header
-    doc.setFillColor(37, 99, 235);
+    doc.setFillColor(37, 99, 235); // blue-600
     doc.rect(0, 0, 210, 40, 'F');
     doc.setTextColor(255, 255, 255);
     doc.setFontSize(22);
@@ -204,11 +205,11 @@ export default function RegistrationForm() {
         const blockHeight = Math.max(labelDim.h, valueDim.h);
         
         if (startY + blockHeight > 260) { 
-           doc.addPage();
-           doc.setFont("helvetica", "normal");
-           doc.setFontSize(11);
-           doc.setTextColor(0, 0, 0);
-           startY = 25;
+          doc.addPage();
+          doc.setFont("helvetica", "normal");
+          doc.setFontSize(11);
+          doc.setTextColor(0, 0, 0);
+          startY = 25;
         }
         
         doc.text(splitLabel, 20, startY);
@@ -239,6 +240,7 @@ export default function RegistrationForm() {
       return;
     }
 
+    // Basic validation for files
     const missingFiles = settings?.formFields?.filter(f => f.type === 'file' && f.required && !formData[f.label]);
     if (missingFiles && missingFiles.length > 0) {
       Swal.fire({
@@ -279,17 +281,14 @@ export default function RegistrationForm() {
           if (result.isConfirmed) {
             printProof(response.noPendaftaran);
           }
-          
           // Clear localStorage on success
           localStorage.removeItem('registration_form_data');
           localStorage.removeItem('registration_form_previews');
           localStorage.removeItem('registration_form_location');
           localStorage.removeItem('registration_form_distance');
           
-          // ✔️ Diganti menggunakan navigate dengan timeout agar download PDF selesai dahulu
-          setTimeout(() => {
-            navigate('/');
-          }, 500);
+          // Reset form
+          window.location.href = '/';
         });
       } else {
         throw new Error(response.message || 'Terjadi kesalahan');
@@ -317,10 +316,7 @@ export default function RegistrationForm() {
           <p className="text-slate-600 mb-8">
             Mohon maaf, pendaftaran peserta murid saat ini sedang ditutup. Silakan kembali lagi nanti atau hubungi pihak sekolah untuk informasi lebih lanjut.
           </p>
-          <Link
-            to="/"
-            className="inline-block bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-colors"
-          >
+          <Link to="/" className="inline-block bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-colors">
             Kembali ke Beranda
           </Link>
         </div>
@@ -378,7 +374,7 @@ export default function RegistrationForm() {
                     <FileText className="w-12 h-12 text-blue-500 mb-2" />
                     <span className="text-sm text-blue-700 font-medium">File Terpilih</span>
                   </div>
-                )}
+                )/* Catatan: Di sini logika untuk PDF sudah aman karena mengarah ke ikon FileText */}
                 <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                   <span className="text-white text-sm font-medium">Ubah File</span>
                 </div>
@@ -467,6 +463,7 @@ export default function RegistrationForm() {
                   <span className="bg-blue-100 text-blue-600 w-8 h-8 rounded-full flex items-center justify-center text-sm">2</span>
                   Upload Berkas
                 </h3>
+                {/* 2. PERBAIKAN: Mengubah teks panduan info ukuran berkas dari 2MB menjadi 5MB */}
                 <p className="text-sm text-slate-500 mb-6 flex items-center gap-2 bg-blue-50 p-3 rounded-lg border border-blue-100">
                   <AlertCircle size={16} className="text-blue-500 shrink-0" />
                   Format file: JPG/PNG/PDF. Ukuran maksimal: 5MB per file.
@@ -485,7 +482,6 @@ export default function RegistrationForm() {
               </div>
             )}
 
-            {/* Pernyataan Kebenaran Data */}
             <div className="bg-slate-50 p-6 rounded-xl border border-slate-200">
               <label className="flex items-start gap-3 cursor-pointer">
                 <div className="flex-shrink-0 mt-1">
