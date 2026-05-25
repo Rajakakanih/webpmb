@@ -101,12 +101,12 @@ export default function RegistrationForm() {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // Check file size (max 2MB)
-    if (file.size > 2 * 1024 * 1024) {
+    // PERBAIKAN 1 & 2: Check file size (Diubah ke max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
       Swal.fire({
         icon: 'error',
         title: 'File Terlalu Besar',
-        text: 'Ukuran maksimal file adalah 2MB',
+        text: 'Ukuran maksimal file adalah 5MB',
         confirmButtonColor: '#3b82f6'
       });
       e.target.value = '';
@@ -225,7 +225,7 @@ export default function RegistrationForm() {
     doc.text("Simpan bukti pendaftaran ini untuk mengecek status kelulusan.", 105, 280, { align: "center" });
 
     doc.save(`Bukti_Pendaftaran_${noPendaftaran}.pdf`);
-  }; // <-- PERBAIKAN: Menambahkan kurung tutup di sini yang sebelumnya hilang
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -466,9 +466,10 @@ export default function RegistrationForm() {
                   <span className="bg-blue-100 text-blue-600 w-8 h-8 rounded-full flex items-center justify-center text-sm">2</span>
                   Upload Berkas
                 </h3>
+                {/* PERBAIKAN 3: Keterangan UI diubah dari 2MB menjadi 5MB */}
                 <p className="text-sm text-slate-500 mb-6 flex items-center gap-2 bg-blue-50 p-3 rounded-lg border border-blue-100">
                   <AlertCircle size={16} className="text-blue-500 shrink-0" />
-                  Format file: JPG/PNG/PDF. Ukuran maksimal: 2MB per file.
+                  Format file: JPG/PNG/PDF. Ukuran maksimal: 5MB per file.
                 </p>
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
