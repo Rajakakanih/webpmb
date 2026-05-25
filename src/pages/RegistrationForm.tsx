@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { motion } from 'motion/react';
 import { Upload, AlertCircle, FileText, Image as ImageIcon, Loader2, MapPin } from 'lucide-react';
 import Swal from 'sweetalert2';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom'; // ✔️ Ditambahkan useNavigate di sini
 import { submitRegistration, RegistrationData } from '../services/api';
 import { useSettings } from '../context/SettingsContext';
 import jsPDF from 'jspdf';
@@ -12,6 +12,7 @@ import { calculateDistance } from '../utils/distance';
 export default function RegistrationForm() {
   const { settings } = useSettings();
   const isClosed = settings?.statusPendaftaran === 'Tutup';
+  const navigate = useNavigate(); // ✔️ Inisialisasi hook navigate
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isAgreed, setIsAgreed] = useState(false);
@@ -101,7 +102,7 @@ export default function RegistrationForm() {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // PERBAIKAN 1 & 2: Check file size (Diubah ke max 5MB)
+    // Batasan file maksimal 5MB
     if (file.size > 5 * 1024 * 1024) {
       Swal.fire({
         icon: 'error',
@@ -116,10 +117,8 @@ export default function RegistrationForm() {
     try {
       let base64String = '';
       if (file.type.startsWith('image/')) {
-        // Compress images to save localStorage space and speed up upload
         base64String = await compressImage(file, 1024);
       } else {
-        // For PDFs and other files, convert directly
         base64String = await new Promise((resolve) => {
           const reader = new FileReader();
           reader.onloadend = () => resolve(reader.result as string);
@@ -152,7 +151,7 @@ export default function RegistrationForm() {
     const doc = new jsPDF();
     
     // Header
-    doc.setFillColor(37, 99, 235); // blue-600
+    doc.setFillColor(37, 99, 235);
     doc.rect(0, 0, 210, 40, 'F');
     doc.setTextColor(255, 255, 255);
     doc.setFontSize(22);
@@ -240,7 +239,6 @@ export default function RegistrationForm() {
       return;
     }
 
-    // Basic validation for files
     const missingFiles = settings?.formFields?.filter(f => f.type === 'file' && f.required && !formData[f.label]);
     if (missingFiles && missingFiles.length > 0) {
       Swal.fire({
@@ -281,14 +279,17 @@ export default function RegistrationForm() {
           if (result.isConfirmed) {
             printProof(response.noPendaftaran);
           }
+          
           // Clear localStorage on success
           localStorage.removeItem('registration_form_data');
           localStorage.removeItem('registration_form_previews');
           localStorage.removeItem('registration_form_location');
           localStorage.removeItem('registration_form_distance');
           
-          // Reset form
-          window.location.href = '/';
+          // ✔️ Diganti menggunakan navigate dengan timeout agar download PDF selesai dahulu
+          setTimeout(() => {
+            navigate('/');
+          }, 500);
         });
       } else {
         throw new Error(response.message || 'Terjadi kesalahan');
@@ -466,7 +467,6 @@ export default function RegistrationForm() {
                   <span className="bg-blue-100 text-blue-600 w-8 h-8 rounded-full flex items-center justify-center text-sm">2</span>
                   Upload Berkas
                 </h3>
-                {/* PERBAIKAN 3: Keterangan UI diubah dari 2MB menjadi 5MB */}
                 <p className="text-sm text-slate-500 mb-6 flex items-center gap-2 bg-blue-50 p-3 rounded-lg border border-blue-100">
                   <AlertCircle size={16} className="text-blue-500 shrink-0" />
                   Format file: JPG/PNG/PDF. Ukuran maksimal: 5MB per file.
