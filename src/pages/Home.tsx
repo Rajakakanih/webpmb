@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { motion } from 'motion/react';
+import { motion } from 'framer-motion'; // Perbaikan di sini
 import { Link } from 'react-router-dom';
 import { BookOpen, Users, Trophy, ChevronRight, CheckCircle2, Calendar, FileText, CheckSquare, AlertCircle, Clock } from 'lucide-react';
 import { useSettings } from '../context/SettingsContext';
@@ -8,12 +8,12 @@ export default function Home() {
   const { settings } = useSettings();
   const isClosed = settings?.statusPendaftaran === 'Tutup';
 
-  // --- LOGIKA HIKUNG MUNDUR (COUNTDOWN) ---
+  // --- LOGIKA HITUNG MUNDUR (COUNTDOWN) ---
   const [timeLeft, setTimeLeft] = useState({ hari: 0, jam: 0, menit: 0, detik: 0 });
   const [isTimeUp, setIsTimeUp] = useState(false);
 
   useEffect(() => {
-    // Menggunakan tanggal dari settings, jika tidak ada pakai tanggal fallback (Contoh: 31 Juli tahun berjalan)
+    // Menggunakan tanggal dari settings, jika tidak ada pakai tanggal fallback
     const targetDateStr = settings?.tanggalSelesaiPendaftaran || `${new Date().getFullYear()}-07-31T23:59:59`;
     const targetTime = new Date(targetDateStr).getTime();
 
@@ -35,14 +35,12 @@ export default function Home() {
       });
     };
 
-    // Jalankan sekali saat mount dan set interval setiap 1 detik
     calculateTimeLeft();
     const timer = setInterval(calculateTimeLeft, 1000);
 
     return () => clearInterval(timer);
   }, [settings?.tanggalSelesaiPendaftaran]);
 
-  // Pendaftaran dianggap tutup jika statusnya 'Tutup' ATAU waktu hitung mundur sudah habis
   const registrationClosed = isClosed || isTimeUp;
   // ----------------------------------------
 
@@ -71,7 +69,7 @@ export default function Home() {
       <section className="relative overflow-hidden bg-white pt-16 pb-32">
         <div 
           className={`absolute inset-0 bg-cover bg-center ${settings?.gambarHeaderBeranda ? 'opacity-30' : 'opacity-5'}`}
-          style={{ backgroundImage: `url('${settings?.gambarHeaderBeranda || 'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?q=80&w=2022&auto=format&fit=crop'}')` }}
+          style={{ backgroundImage: `url('${settings?.gambarHeaderBeranda || 'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?q=80&w=2022&auto=format&fit=crop'}'?` }}
         ></div>
         <div className={`absolute inset-0 bg-gradient-to-br from-blue-50/90 via-white/80 to-green-50/90 ${settings?.gambarHeaderBeranda ? '' : 'backdrop-blur-sm'}`}></div>
         
@@ -139,7 +137,6 @@ export default function Home() {
                 </div>
               </motion.div>
             )}
-            {/* ---------------------------------------- */}
             
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -230,18 +227,22 @@ export default function Home() {
                 Sambutan Kepala Madrasah
               </h2>
               <div className="prose prose-lg text-slate-600">
-                {settings?.sambutanKepalaSekolah?.split('\n').map((paragraph, idx) => (
-                  <p key={idx} className="mb-4">
-                    {paragraph}
-                  </p>
-                ))}
+                {settings?.sambutanKepalaSekolah ? (
+                  settings.sambutanKepalaSekolah.split('\n').map((paragraph, idx) => (
+                    <p key={idx} className="mb-4">
+                      {paragraph}
+                    </p>
+                  ))
+                ) : (
+                  <p>Sambutan kepala sekolah belum diatur.</p>
+                )}
                 <div className="flex items-center gap-4 mt-8">
                   <div className="w-16 h-16 rounded-full bg-slate-200 overflow-hidden">
                     <img src={settings?.fotoKepalaSekolah || "https://images.unsplash.com/photo-1560250097-0b93528c311a?q=80&w=256&auto=format&fit=crop"} alt="Kepala Sekolah" className="w-full h-full object-cover" />
                   </div>
                   <div>
                     <h4 className="font-bold text-slate-900">{settings?.namaKepalaSekolah || 'Kepala Sekolah'}</h4>
-                    <p className="text-sm text-slate-500">Kepala  {settings?.namaSekolah}</p>
+                    <p className="text-sm text-slate-500">Kepala {settings?.namaSekolah || 'Madrasah'}</p>
                   </div>
                 </div>
               </div>
@@ -269,12 +270,16 @@ export default function Home() {
               <div>
                 <h4 className="text-lg font-semibold text-slate-800 mb-3">Misi</h4>
                 <ul className="space-y-3">
-                  {(settings?.misiSekolah ? settings.misiSekolah.split('\n') : []).map((misi, idx) => (
-                    <li key={idx} className="flex items-start gap-3 text-slate-600">
-                      <CheckCircle2 className="text-green-500 shrink-0 mt-0.5" size={20} />
-                      <span>{misi.replace(/^\d+\.\s*/, '')}</span>
-                    </li>
-                  ))}
+                  {settings?.misiSekolah ? (
+                    settings.misiSekolah.split('\n').map((misi, idx) => (
+                      <li key={idx} className="flex items-start gap-3 text-slate-600">
+                        <CheckCircle2 className="text-green-500 shrink-0 mt-0.5" size={20} />
+                        <span>{misi.replace(/^\d+\.\s*/, '')}</span>
+                      </li>
+                    ))
+                  ) : (
+                    <li className="text-slate-500 italic">Misi sekolah belum diatur.</li>
+                  )}
                 </ul>
               </div>
             </motion.div>
@@ -295,7 +300,6 @@ export default function Home() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8 relative">
-            {/* Connecting Line */}
             <div className="hidden md:block absolute top-1/2 left-0 w-full h-0.5 bg-slate-800 -translate-y-1/2 z-0"></div>
             
             {[
@@ -315,7 +319,7 @@ export default function Home() {
                 step: "03",
                 icon: <CheckSquare size={28} />,
                 title: "Verifikasi",
-                desc: "Panitia akan memverifikasi data and dokumen yang diunggah."
+                desc: "Panitia akan memverifikasi data dan dokumen yang diunggah."
               },
               {
                 step: "04",
