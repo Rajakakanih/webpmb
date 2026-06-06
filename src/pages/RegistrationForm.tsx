@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
-import { motion } from 'framer-motion'; // PERBAIKAN: Biasanya di-import dari 'framer-motion'
-import { Upload, AlertCircle, FileText, Image as ImageIcon, Loader2, MapPin } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { motion } from 'framer-motion'; 
+import { Upload, AlertCircle, FileText, Image as ImageIcon, Loader2, MapPin, Clock } from 'lucide-react';
 import Swal from 'sweetalert2';
 import { Link } from 'react-router-dom';
 import { submitRegistration, RegistrationData } from '../services/api';
@@ -9,12 +9,25 @@ import jsPDF from 'jspdf';
 import MapPicker from '../components/MapPicker';
 import { calculateDistance } from '../utils/distance';
 
+interface TimeLeft {
+  days: number;
+  hours: number;
+  minutes: number;
+  seconds: number;
+}
+
 export default function RegistrationForm() {
   const { settings } = useSettings();
-  const isClosed = settings?.statusPendaftaran === 'Tutup';
-
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isAgreed, setIsAgreed] = useState(false);
+  
+  // State untuk menyimpan waktu hitung mundur
+  const [timeLeft, setTimeLeft] = useState<TimeLeft | null>(null);
+  const [isTimeUp, setIsTimeUp] = useState(false);
+
+  // Cek apakah pendaftaran ditutup secara manual atau karena waktu habis
+  const isClosed = settings?.statusPendaftaran === 'Tutup' || isTimeUp;
+
   const [formData, setFormData] = useState<RegistrationData>(() => {
     const cached = localStorage.getItem('registration_form_data');
     return cached ? JSON.parse(cached) : {};
@@ -32,8 +45,44 @@ export default function RegistrationForm() {
     return cached ? JSON.parse(cached) : null;
   });
 
+  // LOGIKA COUNTDOWN TIMER
+  useEffect(() => {
+    // Pastikan settings dan tanggal batas akhir pendaftaran tersedia dari backend
+    // Ganti 'tanggalSelesaiPendaftaran' dengan nama field asli dari backend Anda (contoh format: '2026-07-31T23:59:59')
+    const targetDateStr = settings?.tanggalSelesaiPendaftaran; 
+    if (!targetDateStr || settings?.statusPendaftaran === 'Tutup') return;
+
+    const targetTime = new Date(targetDateStr).getTime();
+
+    const calculateTimeLeft = () => {
+      const now = new Date().getTime();
+      const difference = targetTime - now;
+
+      if (difference <= 0) {
+        setIsTimeUp(true);
+        setTimeLeft(null);
+        return;
+      }
+
+      setTimeLeft({
+        days: Math.floor(difference / (1000 * 60 * 60 * 24)),
+        hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
+        minutes: Math.floor((difference / 1000 / 60) % 60),
+        seconds: Math.floor((difference / 1000) % 60),
+      });
+    };
+
+    // Jalankan kalkulasi pertama kali
+    calculateTimeLeft();
+
+    // Perbarui timer setiap 1 detik
+    const timer = setInterval(calculateTimeLeft, 1000);
+
+    return () => clearInterval(timer);
+  }, [settings]);
+
   // Save to localStorage when state changes
-  React.useEffect(() => {
+  useEffect(() => {
     try {
       localStorage.setItem('registration_form_data', JSON.stringify(formData));
     } catch (e) {
@@ -41,7 +90,7 @@ export default function RegistrationForm() {
     }
   }, [formData]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     try {
       localStorage.setItem('registration_form_previews', JSON.stringify(previews));
     } catch (e) {
@@ -49,7 +98,7 @@ export default function RegistrationForm() {
     }
   }, [previews]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (mapLocation) {
       localStorage.setItem('registration_form_location', JSON.stringify(mapLocation));
     } else {
@@ -57,7 +106,7 @@ export default function RegistrationForm() {
     }
   }, [mapLocation]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (distance !== null) {
       localStorage.setItem('registration_form_distance', JSON.stringify(distance));
     } else {
@@ -101,7 +150,6 @@ export default function RegistrationForm() {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // 1. PERBAIKAN: Ubah ukuran maksimal file menjadi 5MB (5 * 1024 * 1024)
     if (file.size > 5 * 1024 * 1024) {
       Swal.fire({
         icon: 'error',
@@ -116,10 +164,8 @@ export default function RegistrationForm() {
     try {
       let base64String = '';
       if (file.type.startsWith('image/')) {
-        // Compress images to save localStorage space and speed up upload
         base64String = await compressImage(file, 1024);
       } else {
-        // For PDFs and other files, convert directly
         base64String = await new Promise((resolve) => {
           const reader = new FileReader();
           reader.onloadend = () => resolve(reader.result as string);
@@ -139,7 +185,7 @@ export default function RegistrationForm() {
     setFormData(prev => ({ ...prev, 'Koordinat Lokasi': `${lat}, ${lng}` }));
     
     if (settings?.koordinatSekolah) {
-      const [schoolLat, schoolLng] = settings.koordinatSekolah.split(',').map(s => parseFloat(s.trim()));
+      const [schoolLat, schoolLng] = settings.koordinatSekolah.split(',').map((s: string) => parseFloat(s.trim()));
       if (!isNaN(schoolLat) && !isNaN(schoolLng)) {
         const dist = calculateDistance(lat, lng, schoolLat, schoolLng);
         setDistance(dist);
@@ -151,8 +197,7 @@ export default function RegistrationForm() {
   const printProof = (noPendaftaran: string) => {
     const doc = new jsPDF();
     
-    // Header
-    doc.setFillColor(37, 99, 235); // blue-600
+    doc.setFillColor(37, 99, 235); 
     doc.rect(0, 0, 210, 40, 'F');
     doc.setTextColor(255, 255, 255);
     doc.setFontSize(22);
@@ -162,7 +207,6 @@ export default function RegistrationForm() {
     doc.setFont("helvetica", "normal");
     doc.text(settings?.namaSekolah || "SDN Harapan Bangsa", 105, 30, { align: "center" });
 
-    // Content
     doc.setTextColor(0, 0, 0);
     doc.setFontSize(11);
 
@@ -187,11 +231,11 @@ export default function RegistrationForm() {
 
     doc.setFont("helvetica", "normal");
 
-    settings?.formFields?.forEach(field => {
+    settings?.formFields?.forEach((field: any) => {
       if (field.type !== 'file') {
         let value = formData[field.label] || '-';
         if (field.type === 'date') {
-          value = formatDate(value);
+          value = formatDate(value as string);
         }
         
         const maxLabelWidth = 60;
@@ -240,13 +284,12 @@ export default function RegistrationForm() {
       return;
     }
 
-    // Basic validation for files
-    const missingFiles = settings?.formFields?.filter(f => f.type === 'file' && f.required && !formData[f.label]);
+    const missingFiles = settings?.formFields?.filter((f: any) => f.type === 'file' && f.required && !formData[f.label]);
     if (missingFiles && missingFiles.length > 0) {
       Swal.fire({
         icon: 'warning',
         title: 'Berkas Belum Lengkap',
-        text: `Mohon unggah dokumen: ${missingFiles.map(f => f.label).join(', ')}`,
+        text: `Mohon unggah dokumen: ${missingFiles.map((f: any) => f.label).join(', ')}`,
         confirmButtonColor: '#3b82f6'
       });
       return;
@@ -281,13 +324,11 @@ export default function RegistrationForm() {
           if (result.isConfirmed) {
             printProof(response.noPendaftaran);
           }
-          // Clear localStorage on success
           localStorage.removeItem('registration_form_data');
           localStorage.removeItem('registration_form_previews');
           localStorage.removeItem('registration_form_location');
           localStorage.removeItem('registration_form_distance');
           
-          // Reset form
           window.location.href = '/';
         });
       } else {
@@ -314,7 +355,7 @@ export default function RegistrationForm() {
           </div>
           <h2 className="text-2xl font-bold text-slate-900 mb-4">Pendaftaran Ditutup</h2>
           <p className="text-slate-600 mb-8">
-            Mohon maaf, pendaftaran peserta murid saat ini sedang ditutup. Silakan kembali lagi nanti atau hubungi pihak sekolah untuk informasi lebih lanjut.
+            Mohon maaf, pendaftaran peserta didik saat ini telah ditutup karena melewati batas waktu atau ditutup oleh admin.
           </p>
           <Link to="/" className="inline-block bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-colors">
             Kembali ke Beranda
@@ -374,7 +415,7 @@ export default function RegistrationForm() {
                     <FileText className="w-12 h-12 text-blue-500 mb-2" />
                     <span className="text-sm text-blue-700 font-medium">File Terpilih</span>
                   </div>
-                )/* Catatan: Di sini logika untuk PDF sudah aman karena mengarah ke ikon FileText */}
+                )}
                 <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                   <span className="text-white text-sm font-medium">Ubah File</span>
                 </div>
@@ -402,8 +443,8 @@ export default function RegistrationForm() {
     }
   };
 
-  const textFields = settings?.formFields?.filter(f => f.type !== 'file') || [];
-  const fileFields = settings?.formFields?.filter(f => f.type === 'file') || [];
+  const textFields = settings?.formFields?.filter((f: any) => f.type !== 'file') || [];
+  const fileFields = settings?.formFields?.filter((f: any) => f.type === 'file') || [];
 
   return (
     <div className="min-h-screen bg-slate-50 py-12 px-4 sm:px-6 lg:px-8">
@@ -413,9 +454,20 @@ export default function RegistrationForm() {
           animate={{ opacity: 1, y: 0 }}
           className="bg-white rounded-2xl shadow-xl overflow-hidden border border-slate-100"
         >
-          <div className="bg-gradient-to-r from-blue-600 to-blue-800 px-8 py-10 text-white text-center">
+          <div className="bg-gradient-to-r from-blue-600 to-blue-800 px-8 py-10 text-white text-center relative">
             <h2 className="text-3xl font-bold mb-2">Formulir Pendaftaran PMB</h2>
-            <p className="text-blue-100">Lengkapi data diri calon peserta didik dengan benar dan valid.</p>
+            <p className="text-blue-100 mb-4">Lengkapi data diri calon peserta didik dengan benar dan valid.</p>
+            
+            {/* TAMPILAN COUNTDOWN TIMER */}
+            {timeLeft && (
+              <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full text-sm font-semibold border border-white/20">
+                <Clock size={16} className="animate-pulse text-yellow-300" />
+                <span>Sisa Waktu Pendaftaran:</span>
+                <span className="text-yellow-300">
+                  {timeLeft.days}h {timeLeft.hours}j {timeLeft.minutes}m {timeLeft.seconds}d
+                </span>
+              </div>
+            )}
           </div>
 
           <form onSubmit={handleSubmit} className="p-8 space-y-8">
@@ -427,7 +479,7 @@ export default function RegistrationForm() {
                   Data Pendaftar
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {textFields.map(field => (
+                  {textFields.map((field: any) => (
                     <div key={field.id} className={field.type === 'textarea' ? 'col-span-1 md:col-span-2' : ''}>
                       <label className="block text-sm font-medium text-slate-700 mb-1">
                         {field.label} {field.required && '*'}
@@ -463,14 +515,13 @@ export default function RegistrationForm() {
                   <span className="bg-blue-100 text-blue-600 w-8 h-8 rounded-full flex items-center justify-center text-sm">2</span>
                   Upload Berkas
                 </h3>
-                {/* 2. PERBAIKAN: Mengubah teks panduan info ukuran berkas dari 2MB menjadi 5MB */}
                 <p className="text-sm text-slate-500 mb-6 flex items-center gap-2 bg-blue-50 p-3 rounded-lg border border-blue-100">
                   <AlertCircle size={16} className="text-blue-500 shrink-0" />
                   Format file: JPG/PNG/PDF. Ukuran maksimal: 5MB per file.
                 </p>
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {fileFields.map(field => (
+                  {fileFields.map((field: any) => (
                     <div key={field.id} className="flex flex-col">
                       <label className="block text-sm font-medium text-slate-700 mb-2">
                         {field.label} {field.required && '*'}
