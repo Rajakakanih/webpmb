@@ -1,11 +1,50 @@
+import { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
 import { Link } from 'react-router-dom';
-import { BookOpen, Users, Trophy, ChevronRight, CheckCircle2, Calendar, FileText, CheckSquare, AlertCircle } from 'lucide-react';
+import { BookOpen, Users, Trophy, ChevronRight, CheckCircle2, Calendar, FileText, CheckSquare, AlertCircle, Clock } from 'lucide-react';
 import { useSettings } from '../context/SettingsContext';
 
 export default function Home() {
   const { settings } = useSettings();
   const isClosed = settings?.statusPendaftaran === 'Tutup';
+
+  // --- LOGIKA HIKUNG MUNDUR (COUNTDOWN) ---
+  const [timeLeft, setTimeLeft] = useState({ hari: 0, jam: 0, menit: 0, detik: 0 });
+  const [isTimeUp, setIsTimeUp] = useState(false);
+
+  useEffect(() => {
+    // Menggunakan tanggal dari settings, jika tidak ada pakai tanggal fallback (Contoh: 31 Juli tahun berjalan)
+    const targetDateStr = settings?.tanggalSelesaiPendaftaran || `${new Date().getFullYear()}-07-31T23:59:59`;
+    const targetTime = new Date(targetDateStr).getTime();
+
+    const calculateTimeLeft = () => {
+      const now = new Date().getTime();
+      const difference = targetTime - now;
+
+      if (difference <= 0) {
+        setIsTimeUp(true);
+        setTimeLeft({ hari: 0, jam: 0, menit: 0, detik: 0 });
+        return;
+      }
+
+      setTimeLeft({
+        hari: Math.floor(difference / (1000 * 60 * 60 * 24)),
+        jam: Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
+        menit: Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60)),
+        detik: Math.floor((difference % (1000 * 60)) / 1000),
+      });
+    };
+
+    // Jalankan sekali saat mount dan set interval setiap 1 detik
+    calculateTimeLeft();
+    const timer = setInterval(calculateTimeLeft, 1000);
+
+    return () => clearInterval(timer);
+  }, [settings?.tanggalSelesaiPendaftaran]);
+
+  // Pendaftaran dianggap tutup jika statusnya 'Tutup' ATAU waktu hitung mundur sudah habis
+  const registrationClosed = isClosed || isTimeUp;
+  // ----------------------------------------
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -42,13 +81,13 @@ export default function Home() {
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
-              className={`inline-flex items-center gap-2 px-4 py-2 rounded-full font-medium text-sm mb-8 shadow-sm border ${isClosed ? 'bg-red-100 text-red-700 border-red-200' : 'bg-blue-100 text-blue-700 border-blue-200'}`}
+              className={`inline-flex items-center gap-2 px-4 py-2 rounded-full font-medium text-sm mb-8 shadow-sm border ${registrationClosed ? 'bg-red-100 text-red-700 border-red-200' : 'bg-blue-100 text-blue-700 border-blue-200'}`}
             >
               <span className="relative flex h-3 w-3">
-                {!isClosed && <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>}
-                <span className={`relative inline-flex rounded-full h-3 w-3 ${isClosed ? 'bg-red-500' : 'bg-blue-500'}`}></span>
+                {!registrationClosed && <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>}
+                <span className={`relative inline-flex rounded-full h-3 w-3 ${registrationClosed ? 'bg-red-500' : 'bg-blue-500'}`}></span>
               </span>
-              {isClosed ? `Pendaftaran PMB ${new Date().getFullYear()} Belum Dibuka` : `Pendaftaran PMB ${new Date().getFullYear()} Telah Dibuka`}
+              {registrationClosed ? `Pendaftaran PMB ${new Date().getFullYear()} Telah Ditutup` : `Pendaftaran PMB ${new Date().getFullYear()} Telah Dibuka`}
             </motion.div>
             
             <motion.h1
@@ -67,10 +106,40 @@ export default function Home() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
-              className="text-lg md:text-xl text-slate-600 mb-10 leading-relaxed"
+              className="text-lg md:text-xl text-slate-600 mb-8 leading-relaxed"
             >
-              Bergabunglah bersama {settings?.namaSekolah || 'SDN Harapan Bangsa'}. Kami berkomitmen memberikan pendidikan yang terbaik dengan fasilitas modern dan tenaga pendidik profesional.
+              Bergabunglah bersama {settings?.namaSekolah || 'MTs Manbaul Ulum Astambul'}. Kami berkomitmen memberikan pendidikan yang terbaik dengan fasilitas modern dan tenaga pendidik profesional.
             </motion.p>
+
+            {/* --- KOMPONEN VISUAL COUNTDOWN TIMER --- */}
+            {!registrationClosed && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.5, delay: 0.25 }}
+                className="mb-10 p-6 bg-white/70 backdrop-blur-md rounded-2xl border border-blue-100 max-w-xl mx-auto shadow-sm"
+              >
+                <div className="flex items-center justify-center gap-2 text-blue-600 font-semibold mb-3 text-sm tracking-wide uppercase">
+                  <Clock size={18} className="animate-pulse" /> Sisa Waktu Pendaftaran
+                </div>
+                <div className="grid grid-cols-4 gap-3 text-center">
+                  {[
+                    { label: 'Hari', value: timeLeft.hari },
+                    { label: 'Jam', value: timeLeft.jam },
+                    { label: 'Menit', value: timeLeft.menit },
+                    { label: 'Detik', value: timeLeft.detik }
+                  ].map((item, index) => (
+                    <div key={index} className="bg-gradient-to-b from-slate-50 to-slate-100/50 p-3 rounded-xl border border-slate-200/60">
+                      <div className="text-2xl md:text-3xl font-bold text-slate-800 tabular-nums">
+                        {String(item.value).padStart(2, '0')}
+                      </div>
+                      <div className="text-xs text-slate-500 font-medium mt-1">{item.label}</div>
+                    </div>
+                  ))}
+                </div>
+              </motion.div>
+            )}
+            {/* ---------------------------------------- */}
             
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -78,12 +147,12 @@ export default function Home() {
               transition={{ duration: 0.6, delay: 0.3 }}
               className="flex flex-col sm:flex-row gap-4 justify-center"
             >
-              {isClosed ? (
+              {registrationClosed ? (
                 <button
                   disabled
                   className="inline-flex justify-center items-center gap-2 bg-slate-400 text-white px-8 py-4 rounded-full text-lg font-semibold cursor-not-allowed shadow-sm"
                 >
-                  <AlertCircle size={20} /> Pendaftaran Belum Dibuka
+                  <AlertCircle size={20} /> Pendaftaran Ditutup
                 </button>
               ) : (
                 <Link
@@ -246,7 +315,7 @@ export default function Home() {
                 step: "03",
                 icon: <CheckSquare size={28} />,
                 title: "Verifikasi",
-                desc: "Panitia akan memverifikasi data dan dokumen yang diunggah."
+                desc: "Panitia akan memverifikasi data and dokumen yang diunggah."
               },
               {
                 step: "04",
@@ -278,7 +347,7 @@ export default function Home() {
           </div>
 
           <div className="mt-16 text-center">
-            {isClosed ? (
+            {registrationClosed ? (
               <button
                 disabled
                 className="inline-flex justify-center items-center gap-2 bg-slate-700 text-slate-400 px-8 py-4 rounded-full text-lg font-bold cursor-not-allowed shadow-lg"
