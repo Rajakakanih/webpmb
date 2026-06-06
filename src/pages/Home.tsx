@@ -85,7 +85,7 @@ export default function Home() {
                 {!registrationClosed && <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>}
                 <span className={`relative inline-flex rounded-full h-3 w-3 ${registrationClosed ? 'bg-red-500' : 'bg-blue-500'}`}></span>
               </span>
-              {registrationClosed ? `Pendaftaran PMB ${new Date().getFullYear()} Telah Ditutup` : `Pendaftaran PMB ${new Date().getFullYear()} Telah Dibuka`}
+              {registrationClosed ? `Pendaftaran PMB ${new Date().getFullYear()} Telah Ditutup ` : `Pendaftaran PMB ${new Date().getFullYear()} Telah Dibuka`}
             </motion.div>
             
             <motion.h1
