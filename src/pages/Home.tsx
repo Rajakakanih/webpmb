@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion'; // Perbaikan di sini
+import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { BookOpen, Users, Trophy, ChevronRight, CheckCircle2, Calendar, FileText, CheckSquare, AlertCircle, Clock } from 'lucide-react';
 import { useSettings } from '../context/SettingsContext';
@@ -69,7 +69,7 @@ export default function Home() {
       <section className="relative overflow-hidden bg-white pt-16 pb-32">
         <div 
           className={`absolute inset-0 bg-cover bg-center ${settings?.gambarHeaderBeranda ? 'opacity-30' : 'opacity-5'}`}
-          style={{ backgroundImage: `url('${settings?.gambarHeaderBeranda || 'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?q=80&w=2022&auto=format&fit=crop'}'?` }}
+          style={{ backgroundImage: `url('${settings?.gambarHeaderBeranda || 'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?q=80&w=2022&auto=format&fit=crop'}')` }}
         ></div>
         <div className={`absolute inset-0 bg-gradient-to-br from-blue-50/90 via-white/80 to-green-50/90 ${settings?.gambarHeaderBeranda ? '' : 'backdrop-blur-sm'}`}></div>
         
